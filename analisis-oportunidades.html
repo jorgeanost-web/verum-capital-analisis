@@ -1,0 +1,1814 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Análisis de Oportunidades — Verum Capital</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --pizarra: #4A4A45;
+  --carbon: #3A3A36;
+  --oro: #C9A96E;
+  --marfil: #F5EFE4;
+  --arena: #E6DDD0;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--arena); font-family: 'Inter', sans-serif; color: var(--carbon); min-height: 100vh; }
+
+header {
+  background: var(--carbon);
+  padding: 18px 40px;
+  display: flex; align-items: center; gap: 16px;
+  position: sticky; top: 0; z-index: 100;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+}
+.logo-badge {
+  width: 38px; height: 38px; background: var(--pizarra); border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 600; color: var(--oro); flex-shrink: 0;
+}
+.header-title { flex: 1; }
+.header-title h1 { font-family: 'Cormorant Garamond', serif; font-size: 20px; color: var(--marfil); font-weight: 400; }
+.header-title span { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--oro); }
+.btn-reset { font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 500; color: #999; background: none; border: 1px solid #55544f; padding: 6px 14px; border-radius: 4px; cursor: pointer; letter-spacing: 1px; text-transform: uppercase; transition: all 0.2s; }
+.btn-reset:hover { color: var(--marfil); border-color: var(--marfil); }
+
+#progress-nav { background: var(--pizarra); display: flex; overflow-x: auto; padding: 0 40px; }
+.nav-step { display: flex; align-items: center; gap: 8px; padding: 14px 20px 14px 0; white-space: nowrap; position: relative; }
+.nav-step + .nav-step::before { content: '›'; color: #6a6a65; margin-right: 20px; font-size: 16px; }
+.nav-step .n { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 600; flex-shrink: 0; }
+.nav-step .lbl { font-size: 11px; font-weight: 500; letter-spacing: 0.5px; }
+.nav-step.state-locked .n { background: #55544f; color: #888; }
+.nav-step.state-locked .lbl { color: #888; }
+.nav-step.state-active .n { background: var(--oro); color: var(--carbon); }
+.nav-step.state-active .lbl { color: var(--marfil); }
+.nav-step.state-done .n { background: #6a8a6a; color: #fff; font-size: 12px; }
+.nav-step.state-done .lbl { color: #adb; }
+
+main { max-width: 860px; margin: 0 auto; padding: 32px 24px 80px; }
+
+.step-section { margin-bottom: 24px; border-radius: 10px; overflow: hidden; transition: all 0.4s ease; }
+.step-section.state-locked { opacity: 0.35; pointer-events: none; }
+.step-section.state-locked .step-body { display: none; }
+
+.step-header { background: var(--carbon); padding: 18px 28px; display: flex; align-items: center; gap: 16px; }
+.step-section.state-locked .step-header { background: #5a5a55; }
+.step-section.state-done .step-header { background: #3a4a3a; }
+.step-num { font-size: 11px; font-weight: 600; letter-spacing: 2px; color: var(--oro); text-transform: uppercase; }
+.step-section.state-locked .step-num { color: #888; }
+.step-header h2 { font-family: 'Cormorant Garamond', serif; font-size: 22px; color: var(--marfil); font-weight: 400; flex: 1; }
+.step-section.state-locked .step-header h2 { color: #aaa; }
+.lock-icon { font-size: 14px; color: #888; }
+.done-badge { font-size: 11px; font-weight: 500; letter-spacing: 1px; text-transform: uppercase; color: #8bc; background: rgba(100,160,100,0.2); padding: 4px 10px; border-radius: 20px; }
+
+.step-body { background: var(--marfil); padding: 28px; }
+
+.asset-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin-bottom: 10px; }
+.asset-card { background: #fff; border: 2px solid #ddd8d0; border-radius: 8px; padding: 16px; cursor: pointer; transition: all 0.2s; }
+.asset-card:hover { border-color: var(--oro); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+.asset-card.selected { border-color: var(--oro); background: #fdf8f0; box-shadow: 0 0 0 3px rgba(201,169,110,0.2); }
+.asset-card.selected .ac-label { color: var(--carbon); }
+.asset-card .ac-label { font-size: 13px; font-weight: 600; color: var(--carbon); margin-bottom: 4px; }
+.asset-card .ac-desc { font-size: 11px; font-weight: 300; color: #777; line-height: 1.5; }
+.asset-card .ac-tag { display: inline-block; margin-top: 8px; font-size: 9px; font-weight: 500; letter-spacing: 1px; text-transform: uppercase; color: var(--oro); border: 1px solid var(--oro); padding: 2px 7px; border-radius: 10px; }
+
+.section-label { font-size: 10px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; color: var(--oro); margin-bottom: 14px; padding-bottom: 8px; border-bottom: 1px solid var(--arena); }
+.divider { border: none; border-top: 1px solid var(--arena); margin: 24px 0; }
+h3 { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 400; color: var(--carbon); margin-bottom: 14px; }
+
+.btn-confirm { background: var(--carbon); color: var(--oro); font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase; border: none; padding: 13px 28px; border-radius: 6px; cursor: pointer; transition: all 0.2s; margin-top: 20px; }
+.btn-confirm:hover { background: var(--pizarra); }
+.btn-confirm:disabled { background: #ccc; color: #999; cursor: not-allowed; }
+
+/* DOCS */
+.docs-list { display: flex; flex-direction: column; gap: 10px; }
+.doc-item { background: #fff; border: 1px solid #ddd8d0; border-radius: 8px; overflow: hidden; }
+.doc-item.critical { border-left: 3px solid #c06050; }
+.doc-row { display: flex; align-items: flex-start; gap: 14px; padding: 14px 16px; }
+.doc-check { display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; padding-top: 2px; }
+.radio-btn { font-size: 10px; font-weight: 500; letter-spacing: 0.5px; padding: 4px 8px; border-radius: 4px; cursor: pointer; border: 1px solid #ddd; background: #f5f5f5; color: #888; transition: all 0.2s; white-space: nowrap; user-select: none; }
+.radio-btn.tengo.active { background: #e8f5e9; border-color: #6a9a6a; color: #3a6a3a; }
+.radio-btn.no-tengo.active { background: #fff3e0; border-color: #c09040; color: #8a5a00; }
+.doc-info { flex: 1; min-width: 0; }
+.doc-name { font-size: 13px; font-weight: 500; color: var(--carbon); }
+.doc-item.critical .doc-name::after { content: ' — CRÍTICO'; font-size: 10px; color: #c06050; font-weight: 600; }
+.doc-why-toggle { font-size: 11px; color: var(--oro); cursor: pointer; margin-top: 3px; display: inline-block; }
+.doc-why-toggle:hover { text-decoration: underline; }
+.doc-why { font-size: 11px; font-weight: 300; color: #666; line-height: 1.7; margin-top: 8px; padding-top: 8px; border-top: 1px dashed #ddd; display: none; }
+.doc-why .donde { margin-top: 5px; font-size: 10px; color: var(--oro); font-weight: 500; }
+.doc-why.open { display: block; }
+
+/* File / price input */
+.doc-input-area { padding: 10px 16px 14px 44px; border-top: 1px solid #f0ede8; background: #fafaf8; display: none; }
+.doc-input-area.visible { display: block; }
+.doc-input-area label { font-size: 10px; font-weight: 500; letter-spacing: 1px; text-transform: uppercase; color: #888; display: block; margin-bottom: 6px; }
+.doc-price-input { width: 220px; padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 500; color: var(--carbon); }
+.doc-price-input:focus { outline: none; border-color: var(--oro); }
+.file-upload-label { display: inline-flex; align-items: center; gap: 8px; padding: 7px 14px; background: #fff; border: 1px dashed #bbb; border-radius: 6px; cursor: pointer; font-size: 11px; color: #666; transition: all 0.2s; }
+.file-upload-label:hover { border-color: var(--oro); color: var(--carbon); }
+.file-upload-label svg { flex-shrink: 0; }
+.file-input-hidden { display: none; }
+.file-name-display { font-size: 11px; color: #3a6a3a; font-weight: 500; margin-top: 6px; }
+
+.docs-summary { margin-top: 20px; padding: 16px; background: var(--arena); border-radius: 8px; font-size: 12px; color: var(--carbon); }
+.docs-summary .ds-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+.docs-summary .ds-pending { color: #c09040; font-weight: 500; margin-top: 6px; font-size: 11px; }
+
+/* ANALYSIS */
+.analysis-steps { display: flex; flex-direction: column; gap: 16px; }
+.analysis-step { background: #fff; border-radius: 8px; border: 1px solid #ddd8d0; padding: 18px 20px; }
+.analysis-step.highlight { border-color: var(--oro); background: #fdf8f0; }
+.as-num { display: inline-flex; width: 26px; height: 26px; background: var(--carbon); color: var(--oro); font-size: 11px; font-weight: 600; align-items: center; justify-content: center; border-radius: 50%; margin-right: 10px; flex-shrink: 0; }
+.as-title { font-size: 14px; font-weight: 500; color: var(--carbon); display: flex; align-items: center; }
+.as-body { font-size: 12px; font-weight: 300; color: #555; line-height: 1.8; margin-top: 10px; padding-left: 36px; }
+.as-body strong { font-weight: 500; color: var(--carbon); }
+.as-tip { background: #fdf8f0; border-left: 3px solid var(--oro); padding: 10px 14px; border-radius: 0 6px 6px 0; margin-top: 10px; font-size: 11px; color: #666; line-height: 1.7; }
+.as-tip strong { color: var(--carbon); }
+.analysis-checkbox { margin-top: 8px; display: flex; align-items: center; gap: 8px; padding-left: 36px; }
+.analysis-checkbox input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; accent-color: var(--carbon); }
+.analysis-checkbox label { font-size: 12px; color: #555; cursor: pointer; }
+
+/* CALC */
+.calc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+@media(max-width: 600px) { .calc-grid { grid-template-columns: 1fr; } .asset-grid { grid-template-columns: 1fr; } }
+.calc-field label { display: block; font-size: 10px; font-weight: 500; letter-spacing: 1px; text-transform: uppercase; color: #888; margin-bottom: 5px; }
+.calc-field input { width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 500; color: var(--carbon); background: #fff; transition: border 0.2s; }
+.calc-field input:focus { outline: none; border-color: var(--oro); }
+.result-box { background: var(--carbon); border-radius: 8px; padding: 20px 24px; text-align: center; margin-top: 4px; }
+.result-box .res-label { font-size: 10px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; color: var(--oro); }
+.result-box .res-value { font-size: 36px; font-weight: 500; color: var(--marfil); margin: 6px 0; }
+.result-box .res-threshold { font-size: 11px; color: #aaa; }
+.result-box.pass { background: #2d4a2d; }
+.result-box.fail { background: #4a2d2d; }
+.result-box .res-verdict { font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; margin-top: 4px; color: #aaa; }
+.result-box.pass .res-verdict { color: #8bc; }
+.result-box.fail .res-verdict { color: #e99; }
+.scenarios-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-top: 20px; }
+@media(max-width: 600px) { .scenarios-grid { grid-template-columns: 1fr; } }
+.scenario-card { border-radius: 8px; padding: 16px; text-align: center; border: 1px solid #ddd; }
+.scenario-card .sc-label { font-size: 10px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
+.scenario-card .sc-desc { font-size: 11px; font-weight: 300; color: #666; line-height: 1.6; margin-bottom: 10px; }
+.scenario-card .sc-value { font-size: 22px; font-weight: 500; }
+.scenario-card.pesimista { background: #fff5f5; border-color: #e9c; }
+.scenario-card.pesimista .sc-label { color: #c06060; }
+.scenario-card.pesimista .sc-value { color: #c06060; }
+.scenario-card.realista { background: #fff8f0; border-color: #ddc; }
+.scenario-card.realista .sc-label { color: var(--carbon); }
+.scenario-card.realista .sc-value { color: var(--carbon); }
+.scenario-card.optimista { background: #f5fff5; border-color: #9c9; }
+.scenario-card.optimista .sc-label { color: #3a6a3a; }
+.scenario-card.optimista .sc-value { color: #3a6a3a; }
+
+/* RED FLAGS */
+.flags-list { display: flex; flex-direction: column; gap: 8px; }
+.flag-item { display: flex; align-items: flex-start; gap: 12px; padding: 12px 14px; background: #fff; border-radius: 8px; border: 1px solid #ddd; transition: all 0.2s; }
+.flag-item input[type="checkbox"] { width: 16px; height: 16px; margin-top: 2px; flex-shrink: 0; cursor: pointer; accent-color: #c06050; }
+.flag-item label { font-size: 12px; color: var(--carbon); cursor: pointer; line-height: 1.6; }
+.flag-item.flagged { border-color: #e9a; background: #fff5f0; }
+.flag-item.flagged label { color: #c05030; }
+
+/* VERDICT */
+.verdict-box { border-radius: 10px; padding: 32px; text-align: center; margin-top: 24px; }
+.verdict-box.pasa { background: #2d4a2d; }
+.verdict-box.no-pasa { background: #4a2d2d; }
+.verdict-box.revisar { background: #3a3a2a; }
+.verdict-label { font-size: 11px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: #aaa; margin-bottom: 12px; }
+.verdict-title { font-family: 'Cormorant Garamond', serif; font-size: 36px; color: var(--marfil); }
+.verdict-box.pasa .verdict-title { color: #aed; }
+.verdict-box.no-pasa .verdict-title { color: #ebb; }
+.verdict-box.revisar .verdict-title { color: var(--oro); }
+.verdict-detail { font-size: 12px; font-weight: 300; color: #aaa; margin-top: 12px; line-height: 1.8; }
+.summary-pills { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 16px; }
+.pill { font-size: 11px; padding: 5px 12px; border-radius: 20px; background: rgba(255,255,255,0.1); color: #ccc; }
+.pill.ok { background: rgba(100,160,100,0.25); color: #8dc; }
+.pill.warn { background: rgba(220,160,60,0.25); color: var(--oro); }
+.pill.bad { background: rgba(200,80,60,0.25); color: #ebb; }
+
+.info-box { background: #fdf8f0; border-left: 3px solid var(--oro); padding: 12px 16px; border-radius: 0 6px 6px 0; font-size: 12px; color: #666; line-height: 1.7; margin-bottom: 20px; }
+.info-box strong { color: var(--carbon); font-weight: 500; }
+.formula-box { background: var(--carbon); color: var(--marfil); font-family: 'Inter', monospace; font-size: 12px; padding: 16px 20px; border-radius: 8px; margin: 16px 0; line-height: 2; }
+.formula-box span { color: var(--oro); font-weight: 500; }
+
+/* COMPARABLE TABLE — Step 3 */
+.comp-table-wrap { overflow-x: auto; margin-bottom: 16px; }
+.comp-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.comp-table th { background: var(--carbon); color: var(--oro); padding: 9px 10px; text-align: left; font-size: 10px; font-weight: 500; letter-spacing: 1px; text-transform: uppercase; white-space: nowrap; }
+.comp-table td { padding: 5px 4px; border-bottom: 1px solid #eee; vertical-align: middle; }
+.comp-table tbody tr:hover { background: #fafaf8; }
+.comp-inp { width: 100%; padding: 6px 8px; border: 1px solid #ddd; border-radius: 4px; font-family: 'Inter', sans-serif; font-size: 12px; color: var(--carbon); background: #fff; }
+.comp-inp:focus { outline: none; border-color: var(--oro); }
+.comp-url { min-width: 180px; }
+.comp-num { width: 72px; text-align: right; }
+.comp-sel { padding: 6px 8px; border: 1px solid #ddd; border-radius: 4px; font-family: 'Inter', sans-serif; font-size: 12px; color: var(--carbon); background: #fff; cursor: pointer; width: 100%; }
+.comp-sel:focus { outline: none; border-color: var(--oro); }
+.comp-pm2 { text-align: right; font-weight: 500; color: var(--carbon); white-space: nowrap; padding: 5px 12px 5px 6px; min-width: 80px; }
+.comp-empty { text-align: center; color: #bbb; font-size: 12px; padding: 22px; font-style: italic; }
+.btn-add-row { background: none; border: 1px dashed var(--oro); color: var(--oro); font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 500; letter-spacing: 1px; padding: 8px 18px; border-radius: 6px; cursor: pointer; margin-top: 6px; transition: all 0.2s; }
+.btn-add-row:hover { background: rgba(201,169,110,0.1); }
+.btn-del { background: none; border: none; color: #ccc; cursor: pointer; font-size: 14px; padding: 4px 8px; border-radius: 4px; transition: all 0.2s; line-height: 1; }
+.btn-del:hover { color: #c06050; background: #fff0ee; }
+.market-results { background: var(--carbon); border-radius: 8px; padding: 20px 24px; margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; }
+.ms-label { display: block; font-size: 9px; font-weight: 500; letter-spacing: 1px; text-transform: uppercase; color: #777; margin-bottom: 4px; }
+.ms-value { display: block; font-size: 17px; font-weight: 500; color: var(--marfil); line-height: 1.3; }
+.ms-value.price-ok { color: #8dc; }
+.ms-value.price-warn { color: var(--oro); }
+.ms-value.price-bad { color: #e99; font-size: 13px; }
+
+/* NOTES — Step 5 */
+.notes-ta { width: 100%; min-height: 200px; padding: 16px; border: 1px solid #ddd; border-radius: 8px; font-family: 'Inter', sans-serif; font-size: 13px; color: var(--carbon); background: #fff; resize: vertical; line-height: 1.8; transition: border 0.2s; }
+.notes-ta:focus { outline: none; border-color: var(--oro); }
+.notes-ta::placeholder { color: #ccc; }
+
+/* FICHA TÉCNICA */
+.ficha { background: white; border-radius: 10px; overflow: hidden; margin-top: 20px; border: 1px solid var(--arena); }
+.ficha-hdr { background: var(--carbon); padding: 18px 28px; display: flex; align-items: center; gap: 14px; }
+.ficha-logo { width: 40px; height: 40px; background: var(--pizarra); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 600; color: var(--oro); flex-shrink: 0; }
+.ficha-brand { font-family: 'Cormorant Garamond', serif; font-size: 20px; color: var(--marfil); font-weight: 400; }
+.ficha-sub { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--oro); }
+.ficha-date-area { margin-left: auto; text-align: right; }
+.ficha-date-area .fd { font-size: 11px; color: var(--marfil); }
+.ficha-date-area .fa { font-size: 10px; color: #777; margin-top: 2px; }
+.ficha-portada { background: var(--pizarra); padding: 24px 28px; }
+.ficha-tag { font-size: 10px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; color: var(--oro); margin-bottom: 8px; }
+.ficha-nombre { font-family: 'Cormorant Garamond', serif; font-size: 26px; color: var(--marfil); font-weight: 400; margin-bottom: 5px; }
+.ficha-dir { font-size: 12px; color: #aaa; }
+.ficha-sec { padding: 22px 28px; border-bottom: 1px solid var(--arena); background: var(--marfil); }
+.ficha-sec:last-of-type { border-bottom: none; }
+.ficha-sec-lbl { font-size: 10px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; color: var(--oro); margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--arena); }
+.ficha-tbl { width: 100%; border-collapse: collapse; font-size: 12px; }
+.ficha-tbl th { background: var(--arena); color: var(--carbon); padding: 7px 10px; text-align: left; font-size: 10px; font-weight: 500; letter-spacing: 1px; text-transform: uppercase; }
+.ficha-tbl td { padding: 7px 10px; border-bottom: 1px solid var(--arena); color: var(--carbon); }
+.ficha-tbl tr:last-child td { border-bottom: none; }
+.ficha-scenarios { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+@media(max-width:600px){ .ficha-scenarios { grid-template-columns: 1fr; } }
+.ficha-sc { padding: 12px 14px; border-radius: 8px; text-align: center; }
+.ficha-sc.pes { background: #fff5f5; border: 1px solid #e9c; }
+.ficha-sc.real { background: var(--arena); border: 1px solid #ddc; }
+.ficha-sc.opt { background: #f5fff5; border: 1px solid #9c9; }
+.ficha-sc .sc-lbl { font-size: 9px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: #888; margin-bottom: 5px; }
+.ficha-sc .sc-val { font-size: 20px; font-weight: 500; color: var(--carbon); }
+.ficha-flag-item { font-size: 12px; color: #c06050; padding: 5px 0; border-bottom: 1px solid #fff0ee; }
+.ficha-no-flags { font-size: 12px; color: #3a6a3a; font-weight: 500; }
+.ficha-ftr { background: var(--carbon); padding: 14px 28px; display: flex; justify-content: space-between; font-size: 10px; color: #666; flex-wrap: wrap; gap: 6px; }
+.text-ok { color: #3a6a3a; font-weight: 600; }
+.text-bad { color: #c06050; font-weight: 600; }
+
+/* DRIVE SECTION */
+.drive-setup { max-width: 560px; margin-bottom: 20px; }
+.drive-result { margin-top: 16px; padding: 18px 20px; background: #f0faf0; border: 1px solid #9c9; border-radius: 8px; }
+.drive-result .dr-title { font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: #3a6a3a; margin-bottom: 10px; }
+.drive-link { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--carbon); margin-bottom: 6px; }
+.drive-link a { color: var(--oro); font-weight: 500; }
+.drive-link a:hover { text-decoration: underline; }
+.drive-progress { font-size: 12px; color: #888; margin-top: 8px; font-style: italic; }
+.btn-confirm.btn-drive { background: #2d4a2d; }
+.btn-confirm.btn-drive:hover { background: #3a5a3a; }
+.btn-confirm.btn-drive:disabled { background: #ccc; color: #999; cursor: not-allowed; }
+
+/* PRINT */
+@media print {
+  * { visibility: hidden; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  #ficha-print, #ficha-print * { visibility: visible; }
+  #ficha-print { position: fixed; left: 0; top: 0; width: 100%; margin: 0; padding: 0; }
+  body { background: white !important; }
+}
+
+/* INFO FORM — Step 1 */
+.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 4px; }
+@media(max-width: 600px) { .info-grid { grid-template-columns: 1fr; } }
+.info-field label { display: block; font-size: 10px; font-weight: 500; letter-spacing: 1px; text-transform: uppercase; color: #888; margin-bottom: 5px; }
+.info-hint { font-size: 9px; color: #bbb; text-transform: none; letter-spacing: 0; font-weight: 400; }
+.info-field input[type="text"],
+.info-field input[type="number"],
+.info-field input[type="date"] {
+  width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px;
+  font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 400; color: var(--carbon);
+  background: #fff; transition: border 0.2s;
+}
+.info-field input:focus { outline: none; border-color: var(--oro); }
+.radio-group { display: flex; gap: 20px; align-items: center; padding: 8px 0; }
+.radio-option { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--carbon); cursor: pointer; user-select: none; }
+.radio-option input[type="radio"] { width: 16px; height: 16px; cursor: pointer; accent-color: var(--carbon); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-badge">V</div>
+  <div class="header-title">
+    <h1>Análisis de Oportunidades</h1>
+    <span>Verum Capital — Protocolo Interno</span>
+  </div>
+  <button class="btn-reset" onclick="resetAll()">Reiniciar</button>
+</header>
+
+<div id="progress-nav">
+  <div class="nav-step state-active" data-step="1"><div class="n">1</div><span class="lbl">Tipología</span></div>
+  <div class="nav-step state-locked" data-step="2"><div class="n">2</div><span class="lbl">Documentación</span></div>
+  <div class="nav-step state-locked" data-step="3"><div class="n">3</div><span class="lbl">Mercado</span></div>
+  <div class="nav-step state-locked" data-step="4"><div class="n">4</div><span class="lbl">Rentabilidad</span></div>
+  <div class="nav-step state-locked" data-step="5"><div class="n">5</div><span class="lbl">Notas</span></div>
+  <div class="nav-step state-locked" data-step="6"><div class="n">6</div><span class="lbl">Veredicto</span></div>
+</div>
+
+<main>
+
+<!-- STEP 1 -->
+<section class="step-section state-active" id="step-1">
+  <div class="step-header">
+    <span class="step-num">Paso 01</span>
+    <h2>Identifica la operación</h2>
+  </div>
+  <div class="step-body">
+    <div class="section-label">Tipo de activo — selecciona uno</div>
+    <div class="asset-grid" id="asset-grid">
+      <div class="asset-card" onclick="selectAsset('local-cambio-uso', this)">
+        <div class="ac-label">Local — Cambio de uso</div>
+        <div class="ac-desc">Local comercial que se quiere convertir en vivienda/s</div>
+        <div class="ac-tag">Value add</div>
+      </div>
+      <div class="asset-card" onclick="selectAsset('local-con-inquilino', this)">
+        <div class="ac-label">Local con inquilino</div>
+        <div class="ac-desc">Local arrendado en activo. Compra para mantener la renta</div>
+        <div class="ac-tag">Compra en renta</div>
+      </div>
+      <div class="asset-card" onclick="selectAsset('local-vacio', this)">
+        <div class="ac-label">Local vacío</div>
+        <div class="ac-desc">Local sin arrendar. Compra para alquilar o para reforma</div>
+        <div class="ac-tag">Renta / Value add</div>
+      </div>
+      <div class="asset-card" onclick="selectAsset('edificio-renta', this)">
+        <div class="ac-label">Edificio en renta</div>
+        <div class="ac-desc">Edificio con inquilinos. Compra para yield</div>
+        <div class="ac-tag">Compra en renta</div>
+      </div>
+      <div class="asset-card" onclick="selectAsset('edificio-reforma', this)">
+        <div class="ac-label">Edificio para reformar</div>
+        <div class="ac-desc">Edificio vacío o semi-vacío con potencial de reforma</div>
+        <div class="ac-tag">Value add</div>
+      </div>
+      <div class="asset-card" onclick="selectAsset('terreno', this)">
+        <div class="ac-label">Terreno</div>
+        <div class="ac-desc">Suelo residencial o industrial para promoción nueva</div>
+        <div class="ac-tag">Promoción</div>
+      </div>
+      <div class="asset-card" onclick="selectAsset('vivienda', this)">
+        <div class="ac-label">Vivienda para alquiler</div>
+        <div class="ac-desc">Piso o casa vacía para alquiler residencial</div>
+        <div class="ac-tag">Compra en renta</div>
+      </div>
+      <div class="asset-card" onclick="selectAsset('nave', this)">
+        <div class="ac-label">Nave industrial</div>
+        <div class="ac-desc">Nave logística o industrial, con o sin inquilino</div>
+        <div class="ac-tag">Compra en renta</div>
+      </div>
+    </div>
+    <div id="step1-strategy" style="display:none">
+      <hr class="divider">
+      <div class="section-label">Este activo puede tener más de una estrategia — elige una</div>
+      <div class="asset-grid" id="strategy-grid"></div>
+    </div>
+
+    <div id="step1-info" style="display:none">
+      <hr class="divider">
+      <div class="section-label">Datos del activo</div>
+      <div class="info-grid">
+        <div class="info-field" style="grid-column: 1 / -1">
+          <label>Nombre del activo <span class="info-hint">— será el nombre de la carpeta en Drive</span></label>
+          <input type="text" id="info-name" placeholder="Ej: Local Calle Mayor 24 — Madrid" oninput="saveAssetInfo('name', this.value)">
+        </div>
+        <div class="info-field">
+          <label>Dirección / Zona</label>
+          <input type="text" id="info-address" placeholder="Ej: Calle Mayor 24, Madrid Centro" oninput="saveAssetInfo('address', this.value)">
+        </div>
+        <div class="info-field">
+          <label>Superficie (m²)</label>
+          <input type="number" id="info-surface" placeholder="Ej: 250" oninput="saveAssetInfo('surface', this.value)">
+        </div>
+        <div class="info-field">
+          <label>Fecha de análisis</label>
+          <input type="date" id="info-date" oninput="saveAssetInfo('date', this.value)">
+        </div>
+        <div class="info-field">
+          <label>Analista</label>
+          <input type="text" id="info-analyst" placeholder="Nombre del analista" oninput="saveAssetInfo('analyst', this.value)">
+        </div>
+      </div>
+      <hr class="divider">
+      <div class="section-label">Origen de la oportunidad</div>
+      <div class="info-grid">
+        <div class="info-field">
+          <label>Nombre del contacto</label>
+          <input type="text" id="info-contactName" placeholder="Nombre y apellidos" oninput="saveAssetInfo('contactName', this.value)">
+        </div>
+        <div class="info-field">
+          <label>Tipo de contacto</label>
+          <div class="radio-group">
+            <label class="radio-option">
+              <input type="radio" name="contactType" value="propietario" onchange="saveAssetInfo('contactType', this.value)"> Propietario
+            </label>
+            <label class="radio-option">
+              <input type="radio" name="contactType" value="colaborador" onchange="saveAssetInfo('contactType', this.value)"> Colaborador
+            </label>
+          </div>
+        </div>
+      </div>
+      <button class="btn-confirm" onclick="confirmStep1()">Confirmar → Documentación</button>
+    </div>
+  </div>
+</section>
+
+<!-- STEP 2 -->
+<section class="step-section state-locked" id="step-2">
+  <div class="step-header">
+    <span class="step-num">Paso 02</span>
+    <h2>Documentación</h2>
+    <span class="lock-icon" id="lock-2">—</span>
+  </div>
+  <div class="step-body" id="step2-body"></div>
+</section>
+
+<!-- STEP 3 -->
+<section class="step-section state-locked" id="step-3">
+  <div class="step-header">
+    <span class="step-num">Paso 03</span>
+    <h2>Análisis de mercado</h2>
+    <span class="lock-icon" id="lock-3">—</span>
+  </div>
+  <div class="step-body" id="step3-body"></div>
+</section>
+
+<!-- STEP 4 -->
+<section class="step-section state-locked" id="step-4">
+  <div class="step-header">
+    <span class="step-num">Paso 04</span>
+    <h2>Cálculo de rentabilidad</h2>
+    <span class="lock-icon" id="lock-4">—</span>
+  </div>
+  <div class="step-body" id="step4-body"></div>
+</section>
+
+<!-- STEP 5 -->
+<section class="step-section state-locked" id="step-5">
+  <div class="step-header">
+    <span class="step-num">Paso 05</span>
+    <h2>Notas internas</h2>
+    <span class="lock-icon" id="lock-5">—</span>
+  </div>
+  <div class="step-body" id="step5-body"></div>
+</section>
+
+<!-- STEP 6 -->
+<section class="step-section state-locked" id="step-6">
+  <div class="step-header">
+    <span class="step-num">Paso 06</span>
+    <h2>Red flags, veredicto y ficha técnica</h2>
+    <span class="lock-icon" id="lock-6">—</span>
+  </div>
+  <div class="step-body" id="step6-body"></div>
+</section>
+
+</main>
+
+<script>
+// ═══════════════════════════════════════════
+// CONFIG DATA
+// ═══════════════════════════════════════════
+
+const STRATEGIES = {
+  'local-cambio-uso':   ['cambio-uso'],
+  'local-con-inquilino':['renta'],
+  'local-vacio':        ['renta','value-add'],
+  'edificio-renta':     ['renta'],
+  'edificio-reforma':   ['value-add'],
+  'terreno':            ['promocion'],
+  'vivienda':           ['renta'],
+  'nave':               ['renta'],
+};
+
+const STRATEGY_LABELS = {
+  'renta':     { label:'Compra para alquiler (yield)', desc:'Generar renta recurrente. La rentabilidad se mide por yield neto.' },
+  'value-add': { label:'Value add / Reforma', desc:'Comprar, reformar y vender o alquilar a mayor precio. Se mide por margen sobre inversión.' },
+  'cambio-uso':{ label:'Cambio de uso a residencial', desc:'Convertir el local en vivienda/s. Se mide por margen sobre inversión total.' },
+  'promocion': { label:'Promoción nueva', desc:'Construir sobre el terreno. Se mide por beneficio promotor sobre inversión.' },
+};
+
+const ASSET_LABELS = {
+  'local-cambio-uso':'Local — Cambio de uso','local-con-inquilino':'Local con inquilino',
+  'local-vacio':'Local vacío','edificio-renta':'Edificio en renta',
+  'edificio-reforma':'Edificio para reformar','terreno':'Terreno',
+  'vivienda':'Vivienda para alquiler','nave':'Nave industrial',
+};
+
+const THRESHOLDS = {
+  'renta':     { min:6,  label:'Yield neto mínimo: 6%+ (zonas prime: 4-5%)' },
+  'value-add': { min:20, label:'Margen mínimo sobre inversión total: 20%+' },
+  'cambio-uso':{ min:20, label:'Margen mínimo sobre inversión total: 20%+' },
+  'promocion': { min:15, label:'Beneficio promotor mínimo sobre inversión: 15-20%' },
+};
+
+// ─── DOCUMENTACIÓN ────────────────────────
+
+const COMMON_DOCS = [
+  { id:'nota-simple', name:'Nota simple del Registro de la Propiedad', critical:false, type:'file',
+    why:'Verifica la titularidad real del activo, cargas hipotecarias, embargos y servidumbres. Sin este documento no puedes saber si hay deudas ocultas o si el vendedor es realmente el propietario.',
+    donde:'registradores.org (online, ~24h, ~10€) o presencialmente. Solicitar que no tenga más de 3 meses de antigüedad.' },
+  { id:'catastro', name:'Ficha catastral completa', critical:false, type:'file',
+    why:'Confirma la superficie oficial, el uso permitido catastral y el valor catastral (base del IBI). Permite detectar discrepancias entre lo registrado y la realidad física.',
+    donde:'sede.catastro.gob.es, búsqueda por referencia catastral o dirección. Gratuita.' },
+  { id:'precio', name:'Precio de venta solicitado', critical:false, type:'price',
+    why:'Sin precio no hay análisis posible. Es el punto de partida de todos los cálculos de rentabilidad.',
+    donde:'El propietario o colaborador debe facilitarlo por escrito.' },
+  { id:'fotos', name:'Fotografías del estado actual', critical:false, type:'file',
+    why:'Permite valorar el estado de conservación y estimar obras necesarias antes de arrendar o vender.',
+    donde:'Visita presencial al activo o el colaborador las aporta.' },
+  { id:'ibi', name:'Últimos recibos de IBI', critical:false, type:'file',
+    why:'Confirma la referencia catastral y el titular. El IBI es un gasto anual recurrente que afecta al cálculo de yield neto.',
+    donde:'El propietario los facilita directamente.' },
+];
+
+const SPECIFIC_DOCS = {
+  'local-cambio-uso':[
+    { id:'est-cu', name:'Estatutos de la comunidad de propietarios', critical:true, type:'file',
+      why:'CRÍTICO. Si los estatutos prohíben el cambio de uso de local a vivienda, la operación es inviable sin unanimidad de junta.',
+      donde:'Administrador de fincas de la comunidad o Registro de la Propiedad.' },
+    { id:'planos-cu', name:'Planos del local (si existen)', critical:false, type:'file',
+      why:'Necesarios para evaluar la viabilidad técnica del cambio de uso y verificar que la altura libre sea ≥ 2,5m.',
+      donde:'El propietario si los tiene, o en el Ayuntamiento (archivo técnico).' },
+    { id:'consulta-ayto', name:'Consulta previa al Ayuntamiento sobre licencia de cambio de uso', critical:true, type:'file',
+      why:'CRÍTICO. Confirmar antes de comprar que el Ayuntamiento permite el cambio de uso residencial en esa finca concreta.',
+      donde:'Gerencia de Urbanismo del Ayuntamiento. Se solicita por escrito.' },
+    { id:'informe-tec', name:'Informe técnico previo de viabilidad (si existe)', critical:false, type:'file',
+      why:'Si ya existe un estudio de viabilidad, ahorra tiempo y da un punto de partida sólido para calcular costes.',
+      donde:'El propietario lo aporta si existe.' },
+  ],
+  'local-con-inquilino':[
+    { id:'contrato', name:'Contrato de arrendamiento vigente completo', critical:true, type:'file',
+      why:'CRÍTICO. Define la duración restante, la renta actual, las condiciones de actualización y las cláusulas especiales. Sin esto no sabes qué cash flow estás comprando.',
+      donde:'El propietario lo facilita obligatoriamente. Revisar también si hay novaciones o adendas.' },
+    { id:'pagos', name:'Justificante de pagos de renta (últimos 12 meses)', critical:true, type:'file',
+      why:'CRÍTICO. Verifica que el inquilino paga puntualmente. Un impagador puede convertir la inversión en un proceso judicial de 12-18 meses.',
+      donde:'Extractos bancarios del propietario o recibos emitidos. Pedirlos todos sin excepción.' },
+    { id:'deudas-lc', name:'Certificado de deudas con la comunidad', critical:false, type:'file',
+      why:'Las deudas con la comunidad siguen al inmueble, no al vendedor. Si compras con deudas pendientes, las heredas automáticamente.',
+      donde:'El administrador de fincas emite el certificado.' },
+    { id:'est-lc', name:'Estatutos de la comunidad', critical:false, type:'file',
+      why:'Verifica que el uso comercial está permitido y si hay restricciones que afecten al inquilino.',
+      donde:'Administrador de fincas o Registro de la Propiedad.' },
+  ],
+  'local-vacio':[
+    { id:'deudas-lv', name:'Certificado de deudas con la comunidad', critical:false, type:'file',
+      why:'Las deudas comunitarias siguen al inmueble. Comprar sin este certificado es asumir un riesgo innecesario.',
+      donde:'Administrador de fincas.' },
+    { id:'est-lv', name:'Estatutos de la comunidad', critical:false, type:'file',
+      why:'Verifica qué usos están permitidos. Fundamental si el plan es alquilarlo para hostelería, clínica u otros usos que pueden estar restringidos.',
+      donde:'Administrador de fincas o Registro de la Propiedad.' },
+    { id:'lic-prev', name:'Licencia de actividad previa (si existió)', critical:false, type:'file',
+      why:'Si el local tuvo actividad, saber qué tipo facilita tramitar la nueva licencia. Si nunca tuvo licencia, el plazo de tramitación puede ser largo.',
+      donde:'Ayuntamiento, solicitando por referencia catastral.' },
+  ],
+  'edificio-renta':[
+    { id:'inquilinos', name:'Relación completa de inquilinos y contratos', critical:true, type:'file',
+      why:'CRÍTICO. Es la base del cálculo de yield. Hay que ver qué contratos vencen pronto, cuáles tienen actualización de renta y si hay morosidad.',
+      donde:'El propietario o la gestora del edificio. Exigir contratos completos con firmas.' },
+    { id:'gastos-ed', name:'Facturas de gastos comunes (últimos 12 meses)', critical:false, type:'file',
+      why:'Los gastos de mantenimiento, limpieza, ascensor, portero… son reales y reducen el yield neto. Sin datos reales los cálculos tienen alto margen de error.',
+      donde:'El propietario o la gestora del edificio.' },
+    { id:'ite-er', name:'ITE — Inspección Técnica del Edificio (si aplica)', critical:false, type:'file',
+      why:'Detecta deficiencias estructurales que obligan a obras urgentes y pueden destruir la rentabilidad calculada.',
+      donde:'El propietario (obligatoria si el edificio tiene más de 20-50 años según municipio) o el Ayuntamiento.' },
+    { id:'cargas-er', name:'Certificado de cargas hipotecarias y otros gravámenes', critical:false, type:'file',
+      why:'Los edificios pueden tener hipotecas globales, cargas urbanísticas o afecciones fiscales no visibles en la nota simple básica.',
+      donde:'Nota simple completa o certificación registral del Registro de la Propiedad.' },
+    { id:'actas-er', name:'Actas de comunidad (últimos 2 años, si aplica)', critical:false, type:'file',
+      why:'Pueden revelar obras aprobadas pero no ejecutadas que supondrán derramas futuras.',
+      donde:'El administrador de fincas o el propietario.' },
+  ],
+  'edificio-reforma':[
+    { id:'ite-ef', name:'ITE — Inspección Técnica del Edificio', critical:true, type:'file',
+      why:'CRÍTICO. En un edificio a reformar, el estado estructural determina el coste real de la obra. Sin ITE cualquier presupuesto de reforma es una estimación ciega.',
+      donde:'El propietario o encargar a un técnico antes de cerrar la operación.' },
+    { id:'planos-ef', name:'Planos del edificio (si existen)', critical:false, type:'file',
+      why:'Fundamentales para calcular superficies reales, plantear la distribución post-reforma y obtener licencia de obras.',
+      donde:'El propietario, el archivo del Colegio de Arquitectos de la provincia, o el Ayuntamiento.' },
+    { id:'ppto-ef', name:'Presupuesto de obra previo (si existe)', critical:false, type:'file',
+      why:'Si el propietario ya tiene presupuesto, es un punto de referencia. Pedir siempre 2-3 presupuestos propios para contrastar.',
+      donde:'El propietario si lo tiene.' },
+    { id:'inquilinos-ef', name:'Relación de inquilinos actuales (si los hay)', critical:false, type:'file',
+      why:'Inquilinos con contratos vigentes pueden impedir el inicio de la reforma hasta que venzan, retrasando el proyecto meses o años.',
+      donde:'El propietario.' },
+  ],
+  'terreno':[
+    { id:'cedula-urb', name:'Cédula urbanística / calificación del suelo', critical:true, type:'file',
+      why:'CRÍTICO. Define exactamente qué se puede construir: uso permitido, edificabilidad en m²t, altura máxima, parcela mínima.',
+      donde:'Gerencia de Urbanismo del Ayuntamiento.' },
+    { id:'pgou', name:'Plan General de Ordenación Urbana (PGOU) o Plan Parcial aplicable', critical:true, type:'file',
+      why:'CRÍTICO. El planeamiento fija las condiciones vinculantes: retranqueos, ocupación máxima de parcela, usos compatibles.',
+      donde:'Web del Ayuntamiento (planeamiento urbanístico) o Gerencia de Urbanismo.' },
+    { id:'cargas-urb', name:'Informe de cargas urbanísticas pendientes', critical:false, type:'file',
+      why:'Cesiones obligatorias de suelo, costes de urbanización pendientes… pueden reducir el aprovechamiento neto del terreno significativamente.',
+      donde:'Ayuntamiento o Junta de Compensación si aplica.' },
+    { id:'geotec', name:'Estudio geotécnico (si existe)', critical:false, type:'file',
+      why:'Determina la capacidad portante del suelo y los costes de cimentación. Sin él el coste de construcción puede desviarse un 15-25%.',
+      donde:'El propietario si lo tiene. Si no, valorar encargar antes de cerrar.' },
+    { id:'contam', name:'Informe de contaminación de suelos (especialmente en suelo industrial)', critical:true, type:'file',
+      why:'CRÍTICO para suelo industrial. Un suelo contaminado puede hacer inviable la operación o requerir descontaminación de coste millonario.',
+      donde:'Consejería de Medio Ambiente de la Comunidad Autónoma. Registro de suelos contaminados.' },
+  ],
+  'vivienda':[
+    { id:'cedula-hab', name:'Cédula de habitabilidad vigente', critical:true, type:'file',
+      why:'CRÍTICO. Sin cédula de habitabilidad no se puede alquilar la vivienda legalmente.',
+      donde:'El propietario debe tenerla. Si no, tramitarla en la Comunidad Autónoma con técnico habilitado.' },
+    { id:'cert-en-viv', name:'Certificado de eficiencia energética', critical:false, type:'file',
+      why:'Obligatorio por ley para alquilar. Viviendas con calificación F o G serán prohibidas para alquiler en los próximos años según directiva europea.',
+      donde:'El propietario (debe tenerlo). Cuesta entre 100-300€ con un técnico habilitado.' },
+    { id:'deudas-viv', name:'Certificado de deudas con la comunidad', critical:false, type:'file',
+      why:'Las deudas comunitarias siguen al inmueble. Si hay deudas pendientes, el nuevo propietario las hereda.',
+      donde:'El administrador de fincas.' },
+    { id:'estado-alq', name:'Estado del alquiler actual (libre o arrendada)', critical:false, type:'file',
+      why:'Si hay inquilino, hay que conocer la duración restante del contrato y la renta actual. Condiciona el plazo para reformar o cambiar la renta.',
+      donde:'El propietario lo informa directamente.' },
+  ],
+  'nave':[
+    { id:'lic-nave', name:'Licencia de actividad vigente', critical:true, type:'file',
+      why:'CRÍTICO. Sin licencia de actividad actualizada el inquilino no puede operar. Tramitar una nueva puede llevar entre 3 meses y 2 años.',
+      donde:'Ayuntamiento (área de Actividades o Urbanismo). Verificar que la actividad prevista está permitida en esa zona.' },
+    { id:'instal-nave', name:'Informe de instalaciones: eléctrica, agua, gas', critical:true, type:'file',
+      why:'CRÍTICO. Las instalaciones industriales son muy costosas. Un transformador insuficiente o acometida de gas inadecuada puede costar 100.000€ o más.',
+      donde:'Visita técnica con instalador certificado + certificados de instalaciones del propietario.' },
+    { id:'contrato-nave', name:'Contrato de arrendamiento (si tiene inquilino)', critical:false, type:'file',
+      why:'Duración restante, renta, condiciones de renovación y cláusulas de uso. Define el cash flow real que estás comprando.',
+      donde:'El propietario lo facilita.' },
+    { id:'ambiental-nave', name:'Informe ambiental / contaminación de suelos', critical:false, type:'file',
+      why:'Si la nave albergó actividades industriales, puede haber contaminación en el suelo o subsuelo.',
+      donde:'Consejería de Medio Ambiente autonómica.' },
+    { id:'cert-en-nave', name:'Certificado de eficiencia energética', critical:false, type:'file',
+      why:'Obligatorio para arrendar. Naves con mala calificación energética tendrán dificultades con empresas que aplican criterios ESG.',
+      donde:'El propietario o tramitarlo con un técnico habilitado.' },
+  ],
+};
+
+// ─── ANÁLISIS DE MERCADO ──────────────────
+
+// Paso 1 específico por tipo de activo + estrategia
+function getMarketStep1(assetId, strategy) {
+  const steps = {
+    'local-con-inquilino': {
+      id:'ms1', title:'Verifica si la renta actual está en línea con el mercado',
+      body:`El local ya tiene inquilino y renta contratada. El objetivo no es buscar un precio de venta, sino <strong>verificar que la renta del contrato actual es sostenible</strong>. Busca en Idealista locales <strong>en alquiler</strong> de la misma zona, tipología y superficie ±30%. Compara la renta €/m² del contrato con los comparables de alquiler encontrados.`,
+      tip:`<strong>Si la renta está por debajo de mercado</strong> → potencial de revisión al alza en la renovación.<br><strong>Si está por encima de mercado</strong> → riesgo de que el inquilino no renueve o negocie a la baja. Ambos escenarios condicionan el análisis.`
+    },
+    'local-vacio-renta': {
+      id:'ms1', title:'Busca locales similares en alquiler para estimar la renta de mercado',
+      body:`El local está vacío. Para calcular el yield necesitas estimar a qué renta mensual podrías alquilarlo. Busca en Idealista <strong>locales en alquiler</strong> de la misma zona y superficie similar (±30%). El objetivo es definir un rango de renta mensual realista para este local.`,
+      tip:`Ten en cuenta el estado actual del local: si necesita obras antes de alquilar, el comparativo ideal es con locales en estado similar. No olvides incluir 1-2 meses de vacío en el cálculo de yield.`
+    },
+    'local-vacio-value-add': {
+      id:'ms1', title:'Busca el precio del producto terminado equivalente',
+      body:`Para calcular el margen del value add necesitas saber a cuánto podrás vender o alquilar el local una vez reformado. Busca en Idealista <strong>locales reformados o en buen estado en venta</strong> (si el plan es vender) o en alquiler (si el plan es arrendar) de la misma zona y superficie similar.`,
+      tip:`Busca siempre <strong>producto reformado o en buen estado</strong>, no en mal estado. El precio de referencia es el del producto terminado de calidad similar al que vas a producir.`
+    },
+    'local-cambio-uso': {
+      id:'ms1', title:'Busca viviendas equivalentes para estimar el valor del producto final',
+      body:`El producto final de esta operación serán viviendas. Busca en Idealista <strong>viviendas en venta ya reformadas o de obra reciente</strong> de características similares en la misma zona (superficie, calidades, número de dormitorios aproximado). Ese precio €/m² de venta es el valor de salida que necesitas para calcular el margen.`,
+      tip:`Busca siempre <strong>producto ya reformado o de obra nueva</strong>, no en mal estado. El precio de referencia es el de un producto terminado de calidad equivalente al que vas a producir.`
+    },
+    'edificio-renta': {
+      id:'ms1', title:'Analiza las rentas de mercado por tipología de unidad del edificio',
+      body:`El edificio tiene inquilinos. Para cada tipo de unidad (viviendas, locales, trasteros…) busca <strong>comparables en alquiler</strong> de la misma zona. Determina si las rentas actuales están en línea con el mercado, por debajo (potencial de subida) o por encima (riesgo de no renovación). Analiza cada tipología de unidad por separado.`,
+      tip:`Calcula el yield con las rentas actuales del contrato. Luego calcula el yield <strong>a mercado</strong> con los comparables. La diferencia es el potencial de mejora o el riesgo a gestionar.`
+    },
+    'edificio-reforma': {
+      id:'ms1', title:'Busca el precio de venta del producto reformado equivalente',
+      body:`El objetivo es saber a cuánto podrás vender el edificio una vez reformado. Busca en Idealista <strong>viviendas en venta ya reformadas o de obra reciente</strong> de características similares en la misma zona. Ese €/m² del producto terminado es la variable crítica para calcular el margen.`,
+      tip:`Si el plan es alquilar en lugar de vender, busca comparables en alquiler de producto reformado. Decide antes qué estrategia de salida aplica, ya que los cálculos de rentabilidad son diferentes.`
+    },
+    'terreno': {
+      id:'ms1', title:'Busca el precio de venta de producto nuevo equivalente en la zona',
+      body:`Para el método residual necesitas saber a cuánto se vende <strong>obra nueva o producto terminado equivalente</strong> en esa zona. Busca en Idealista viviendas o naves de nueva construcción similares. El €/m² de venta es la variable más importante del análisis residual.`,
+      tip:`Si no hay obra nueva en esa zona exacta, busca en zonas comparables o usa como referencia producto reformado de alta calidad como proxy.`
+    },
+    'vivienda': {
+      id:'ms1', title:'Busca viviendas similares en alquiler para estimar la renta de mercado',
+      body:`Para calcular el yield necesitas la renta de mercado. Busca en Idealista <strong>viviendas en alquiler</strong> de la misma zona, superficie similar (±30%), número de habitaciones y estado similares. El objetivo es definir el rango de renta mensual realista.`,
+      tip:`Fíjate en la antigüedad de los anuncios. Una vivienda que lleva meses sin inquilino sugiere que el precio está por encima del mercado real.`
+    },
+    'nave': {
+      id:'ms1', title:'Busca naves similares en alquiler para estimar la renta de mercado',
+      body:`Para calcular el yield necesitas la renta de mercado en naves industriales. Busca en Idealista <strong>naves en alquiler</strong> de la misma zona, superficie similar (±30%) y características equivalentes (altura libre, acceso, muelles de carga). Las naves se miden en €/m²/mes.`,
+      tip:`La ubicación (acceso a autovías, tipo de polígono) puede hacer variar la renta un 30-50%. Usa comparables del mismo polígono o de zonas logísticas equivalentes.`
+    },
+  };
+
+  if (assetId === 'local-vacio') {
+    return strategy === 'renta' ? steps['local-vacio-renta'] : steps['local-vacio-value-add'];
+  }
+  return steps[assetId] || steps['vivienda'];
+}
+
+// Pasos genéricos 2-4 (aplican a todos, adaptados para ser agnósticos a venta/alquiler)
+const MARKET_STEPS_GENERIC = [
+  { id:'mg2', title:'Recoge mínimo 6-8 comparables y anótalos',
+    body:`Para cada comparable anota: <strong>zona, superficie (m²), precio total (€), €/m², estado/antigüedad</strong>. Si tienes menos de 6 comparables la muestra es insuficiente: amplía zona o busca en Fotocasa también.`,
+    tip:`Guarda capturas de pantalla de los comparables. Si en el futuro hay discrepancias, necesitarás los datos originales.` },
+  { id:'mg3', title:'Calcula la mediana de €/m² (nunca la media)',
+    body:`Ordena los comparables de menor a mayor €/m². <strong>La mediana es el valor central</strong>: si son 8 comparables, es la media del 4º y 5º valor. Si son 7, es el 4º valor.<br><br>La mediana es más fiable que la media porque no se distorsiona por comparables atípicos.`,
+    tip:`<strong>Ejemplo:</strong> 8 comparables a 1.800 / 1.900 / 2.000 / 2.100 / 2.200 / 2.400 / 2.600 / 3.000 €/m² → Mediana = (2.100+2.200)/2 = <strong>2.150 €/m²</strong>` },
+  { id:'mg4', title:'Aplica descuento del 5-10% para estimar el precio real de mercado',
+    body:`Los precios en portales son precios de oferta, no de transacción. En España el precio real de cierre suele ser un <strong>5-10% inferior</strong> al precio de oferta. Aplica ese descuento a la mediana para obtener tu referencia ajustada.`,
+    tip:`Si el mercado está activo y hay poca oferta, usa el 5%. Si hay mucha oferta o el mercado está flojo, usa el 10%.` },
+];
+
+// Pasos adicionales específicos que van después de los genéricos
+const MARKET_STEPS_EXTRA = {
+  'terreno':[
+    { id:'mt-edif', title:'Calcula la edificabilidad total (m² construibles vendibles)',
+      body:`Con la cédula urbanística: <strong>Superficie parcela × Índice de edificabilidad = m² construibles totales</strong>. Resta zonas no computables (sótano, instalaciones según normativa local) para obtener los m² vendibles reales.`,
+      tip:`El negocio de la promoción se calcula sobre m² de techo vendible, no sobre m² construibles brutos.` },
+  ],
+  'edificio-reforma':[
+    { id:'me-ref', title:'Determina el coste de la reforma con presupuestos',
+      body:`Reforma residencial integral: <strong>850-1.200 €/m²</strong>. Solo acabados/pintura: 300-500 €/m². Solicitar 2-3 presupuestos a constructoras antes de cerrar. El coste de obra es la variable con más incertidumbre en este tipo de activo.`,
+      tip:`Mejor pecar de conservador en coste de obras. Un 10% de desviación en un edificio grande puede ser 100.000€ extra.` },
+  ],
+};
+
+// ─── RED FLAGS ────────────────────────────
+
+const RED_FLAGS_COMMON = [
+  'Cargas registrales en la nota simple que no se cancelarán antes del cierre',
+  'Litigio judicial activo sobre el activo (embargo, ejecución hipotecaria, herencia disputada…)',
+  'Precio pedido más de un 25% por encima de la mediana de comparables sin justificación',
+  'La rentabilidad calculada no supera el umbral mínimo ni en el escenario optimista',
+];
+
+const RED_FLAGS_SPECIFIC = {
+  'local-cambio-uso':[
+    'Los estatutos de la comunidad prohíben el cambio de uso a residencial',
+    'Altura libre inferior a 2,5 metros (inviable para cambio de uso)',
+    'El Ayuntamiento deniega la consulta previa o hay restricción urbanística expresa',
+  ],
+  'local-con-inquilino':[
+    'Inquilino con más de 2 meses de impago en los últimos 12 meses',
+    'Contrato con opción de compra activa que podría frustrar la transmisión',
+    'Plazo restante de contrato inferior a 1 año sin garantía de renovación',
+  ],
+  'local-vacio':[
+    'Estatutos que restringen los usos comerciales de forma severa',
+    'Sin posibilidad de licencia de actividad para los usos demandados en esa zona',
+  ],
+  'edificio-renta':[
+    'ITE con calificación desfavorable y obras obligatorias de importe elevado',
+    'Más del 30% de la superficie en morosidad activa',
+    'Cargas hipotecarias globales sobre el edificio que superan el 60% del valor',
+  ],
+  'edificio-reforma':[
+    'ITE con problemas estructurales graves (coste de obra imposible de estimar)',
+    'Inquilinos en renta antigua (Ley de 1964) que no pueden ser desahuciados',
+    'Expediente de disciplina urbanística abierto sobre el edificio',
+  ],
+  'terreno':[
+    'Suelo sin calificación urbanística consolidada (no puede edificarse a corto plazo)',
+    'Cargas de urbanización que superan el 20% del valor del suelo',
+    'Contaminación de suelos confirmada',
+    'Servidumbres, líneas eléctricas o infraestructuras que limiten la edificabilidad',
+  ],
+  'vivienda':[
+    'Cédula de habitabilidad irrecuperable sin obras de importe elevado',
+    'Calificación energética F o G sin posibilidad de mejora viable',
+    'Inquilino con contrato de renta antigua (Ley 1964)',
+  ],
+  'nave':[
+    'Sin licencia de actividad y municipio con plazo de tramitación superior a 12 meses',
+    'Instalación eléctrica insuficiente para la actividad prevista y coste de mejora elevado',
+    'Contaminación de suelos confirmada o alta sospecha por actividad industrial previa',
+    'Suelo con calificación que no permite la actividad prevista por el inquilino',
+  ],
+};
+
+// ═══════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════
+
+let state = {
+  asset: null,
+  strategy: null,
+  assetInfo: {
+    name: '',
+    address: '',
+    surface: '',
+    date: new Date().toISOString().slice(0, 10),
+    analyst: '',
+    contactName: '',
+    contactType: 'propietario',
+  },
+  docStatus: {},
+  comparables: [],
+  marketData: { median: null, discounted: null, classification: null },
+  marketChecks: {},
+  calcValues: {},
+  calcInputs: {},
+  notes: '',
+  flags: {},
+  currentStep: 1,
+};
+
+try { const s = localStorage.getItem('vc_analysis'); if(s) state = JSON.parse(s); } catch(e){}
+
+// File objects en memoria (no serializables — se pierden al recargar)
+const fileObjects = {};
+
+// GAS URL persistente independiente del análisis
+function getGasUrl() { return localStorage.getItem('vc_gas_url') || 'https://script.google.com/macros/s/AKfycbyYRfj0mXlZ4Qz1SRISREyywVm5SxXTj1TZlAs54b8EfslXlrkYxy1bW_Gs5O4tcFg88A/exec'; }
+function setGasUrl(url) { localStorage.setItem('vc_gas_url', url); }
+
+function save() {
+  try { localStorage.setItem('vc_analysis', JSON.stringify(state)); } catch(e){}
+}
+
+function resetAll() {
+  if (!confirm('¿Reiniciar el análisis? Se perderán todos los datos.')) return;
+  localStorage.removeItem('vc_analysis');
+  location.reload();
+}
+
+// ═══════════════════════════════════════════
+// STEP 1 — auto-advance
+// ═══════════════════════════════════════════
+
+function selectAsset(assetId, el) {
+  state.asset = assetId;
+  state.strategy = null;
+  document.querySelectorAll('#asset-grid .asset-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+
+  const strats = STRATEGIES[assetId];
+  const stratSection = document.getElementById('step1-strategy');
+  const stratGrid = document.getElementById('strategy-grid');
+  const infoSection = document.getElementById('step1-info');
+
+  infoSection.style.display = 'none';
+
+  if (strats.length === 1) {
+    state.strategy = strats[0];
+    stratSection.style.display = 'none';
+    save();
+    showInfoForm();
+  } else {
+    stratSection.style.display = 'block';
+    stratGrid.innerHTML = strats.map(s =>
+      `<div class="asset-card" onclick="selectStrategy('${s}', this)">
+        <div class="ac-label">${STRATEGY_LABELS[s].label}</div>
+        <div class="ac-desc">${STRATEGY_LABELS[s].desc}</div>
+      </div>`
+    ).join('');
+    stratSection.scrollIntoView({ behavior:'smooth', block:'nearest' });
+    save();
+  }
+}
+
+function selectStrategy(stratId, el) {
+  state.strategy = stratId;
+  document.querySelectorAll('#strategy-grid .asset-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  save();
+  showInfoForm();
+}
+
+function showInfoForm() {
+  const infoSection = document.getElementById('step1-info');
+  infoSection.style.display = 'block';
+  // Restore saved values
+  const ai = state.assetInfo;
+  const fields = ['name', 'address', 'surface', 'date', 'analyst', 'contactName'];
+  fields.forEach(f => {
+    const el = document.getElementById('info-' + f);
+    if (el && ai[f]) el.value = ai[f];
+  });
+  const ct = document.querySelector(`input[name="contactType"][value="${ai.contactType || 'propietario'}"]`);
+  if (ct) ct.checked = true;
+  setTimeout(() => infoSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 80);
+}
+
+function saveAssetInfo(field, value) {
+  state.assetInfo[field] = value;
+  save();
+}
+
+function confirmStep1() {
+  if (!state.asset || !state.strategy) return;
+  // Read all form fields into state
+  ['name', 'address', 'surface', 'analyst', 'contactName'].forEach(f => {
+    const el = document.getElementById('info-' + f);
+    if (el) state.assetInfo[f] = el.value;
+  });
+  const dateEl = document.getElementById('info-date');
+  if (dateEl) state.assetInfo.date = dateEl.value;
+  const ctEl = document.querySelector('input[name="contactType"]:checked');
+  if (ctEl) state.assetInfo.contactType = ctEl.value;
+
+  state.currentStep = Math.max(state.currentStep, 2);
+  setStepDone(1);
+  unlockStep(2);
+  renderStep2();
+  scrollToStep(2);
+  save();
+}
+
+// ═══════════════════════════════════════════
+// STEP 2 — DOCUMENTACIÓN
+// ═══════════════════════════════════════════
+
+function renderStep2() {
+  const specific = SPECIFIC_DOCS[state.asset] || [];
+  const body = document.getElementById('step2-body');
+  body.innerHTML = `
+    <div class="info-box">
+      <strong>Activo:</strong> ${ASSET_LABELS[state.asset]} &nbsp;·&nbsp;
+      <strong>Estrategia:</strong> ${STRATEGY_LABELS[state.strategy].label}<br>
+      Marca si tienes cada documento o si hay que pedirlo. Los que tengas puedes adjuntarlos directamente aquí.
+    </div>
+    <div class="section-label">Documentación común — todos los activos</div>
+    <div class="docs-list">${COMMON_DOCS.map(d => docItemHTML(d)).join('')}</div>
+    <hr class="divider">
+    <div class="section-label">Documentación específica — ${ASSET_LABELS[state.asset]}</div>
+    <div class="docs-list">${specific.map(d => docItemHTML(d)).join('')}</div>
+    <div class="docs-summary" id="docs-summary"></div>
+    <button class="btn-confirm" onclick="confirmStep2()">He revisado la documentación → Analizar mercado</button>
+  `;
+  // Restore state
+  Object.entries(state.docStatus).forEach(([id, val]) => {
+    if (!val) return;
+    const item = document.querySelector(`[data-doc-id="${id}"]`);
+    if (!item) return;
+    if (val.status) {
+      item.querySelector(`[data-radio="${val.status}"]`)?.classList.add('active');
+      const inputArea = item.querySelector('.doc-input-area');
+      if (inputArea && val.status === 'tengo') inputArea.classList.add('visible');
+    }
+    if (val.price) item.querySelector('.doc-price-input') && (item.querySelector('.doc-price-input').value = val.price);
+    if (val.fileName) {
+      const disp = item.querySelector('.file-name-display');
+      if (disp) disp.textContent = val.fileName;
+    }
+  });
+  updateDocsSummary();
+}
+
+function docItemHTML(doc) {
+  const st = state.docStatus[doc.id] || {};
+  const hasTengo = st.status === 'tengo';
+  const hasNoTengo = st.status === 'no-tengo';
+
+  let inputAreaHTML = '';
+  if (doc.type === 'price') {
+    // Price input always shown (regardless of tengo/no-tengo)
+    inputAreaHTML = `
+      <div class="doc-input-area visible" id="input-${doc.id}">
+        <label>Introduce el precio de venta solicitado</label>
+        <input type="text" class="doc-price-input" placeholder="Ej: 450.000 €"
+          value="${st.price || ''}"
+          oninput="savePriceInput('${doc.id}', this.value)">
+      </div>`;
+  } else {
+    inputAreaHTML = `
+      <div class="doc-input-area ${hasTengo ? 'visible' : ''}" id="input-${doc.id}">
+        <label>Adjuntar archivo</label>
+        <label class="file-upload-label" for="file-${doc.id}">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Seleccionar archivo
+        </label>
+        <input type="file" class="file-input-hidden" id="file-${doc.id}" onchange="handleFileSelect('${doc.id}', this)">
+        <div class="file-name-display" id="fname-${doc.id}">${st.fileName || ''}</div>
+      </div>`;
+  }
+
+  return `
+    <div class="doc-item ${doc.critical ? 'critical' : ''}" data-doc-id="${doc.id}">
+      <div class="doc-row">
+        <div class="doc-check">
+          ${doc.type !== 'price' ? `
+          <span class="radio-btn tengo ${hasTengo ? 'active' : ''}" data-radio="tengo"
+            onclick="setDocStatus('${doc.id}', 'tengo', this)">Tengo</span>
+          <span class="radio-btn no-tengo ${hasNoTengo ? 'active' : ''}" data-radio="no-tengo"
+            onclick="setDocStatus('${doc.id}', 'no-tengo', this)">Pedir</span>
+          ` : ''}
+        </div>
+        <div class="doc-info">
+          <div class="doc-name">${doc.name}</div>
+          <div class="doc-why-toggle" onclick="toggleWhy('${doc.id}')">+ ¿Por qué necesito este documento?</div>
+          <div class="doc-why" id="why-${doc.id}">
+            ${doc.why}
+            <div class="donde">${doc.donde}</div>
+          </div>
+        </div>
+      </div>
+      ${inputAreaHTML}
+    </div>`;
+}
+
+function setDocStatus(docId, val, el) {
+  if (!state.docStatus[docId]) state.docStatus[docId] = {};
+  state.docStatus[docId].status = val;
+  const item = el.closest('[data-doc-id]');
+  item.querySelectorAll('.radio-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  const inputArea = document.getElementById('input-' + docId);
+  if (inputArea) inputArea.classList.toggle('visible', val === 'tengo');
+  updateDocsSummary();
+  save();
+}
+
+function savePriceInput(docId, val) {
+  if (!state.docStatus[docId]) state.docStatus[docId] = {};
+  state.docStatus[docId].price = val;
+  save();
+}
+
+function handleFileSelect(docId, input) {
+  if (!input.files || !input.files[0]) return;
+  const file = input.files[0];
+  fileObjects[docId] = file;
+  if (!state.docStatus[docId]) state.docStatus[docId] = {};
+  state.docStatus[docId].fileName = file.name;
+  const disp = document.getElementById('fname-' + docId);
+  if (disp) disp.textContent = file.name;
+  save();
+}
+
+function toggleWhy(docId) {
+  const el = document.getElementById('why-' + docId);
+  el.classList.toggle('open');
+  el.previousElementSibling.textContent = el.classList.contains('open') ? '— Cerrar' : '+ ¿Por qué necesito este documento?';
+}
+
+function updateDocsSummary() {
+  const allDocs = [...COMMON_DOCS, ...(SPECIFIC_DOCS[state.asset] || [])].filter(d => d.type !== 'price');
+  const tengo = allDocs.filter(d => state.docStatus[d.id]?.status === 'tengo').length;
+  const pedir = allDocs.filter(d => state.docStatus[d.id]?.status === 'no-tengo').length;
+  const el = document.getElementById('docs-summary');
+  if (!el) return;
+  el.innerHTML = `
+    <div class="ds-row">
+      <span>Documentos revisados: <strong>${tengo+pedir} / ${allDocs.length}</strong></span>
+      <span style="color:#6a9a6a;font-weight:500">Tengo: ${tengo}</span>
+      <span style="color:#c09040;font-weight:500">Por pedir: ${pedir}</span>
+    </div>
+    ${pedir > 0 ? `<div class="ds-pending">Recuerda pedir la documentación marcada como pendiente antes de avanzar con la operación.</div>` : ''}
+  `;
+}
+
+function confirmStep2() {
+  state.currentStep = Math.max(state.currentStep, 3);
+  setStepDone(2);
+  unlockStep(3);
+  renderStep3();
+  scrollToStep(3);
+  save();
+}
+
+// ═══════════════════════════════════════════
+// STEP 3 — ANÁLISIS DE MERCADO
+// ═══════════════════════════════════════════
+
+function renderStep3() {
+  const guide = getMarketStep1(state.asset, state.strategy);
+  const body = document.getElementById('step3-body');
+  body.innerHTML = `
+    <div class="info-box">
+      <strong>${guide.title}</strong><br>
+      ${guide.body}
+      ${guide.tip ? `<div class="as-tip" style="margin-top:10px">${guide.tip}</div>` : ''}
+    </div>
+    <div class="section-label">Tabla de comparables</div>
+    <div class="comp-table-wrap">
+      <table class="comp-table">
+        <thead>
+          <tr>
+            <th style="width:35%">URL / Referencia</th>
+            <th style="width:10%">m²</th>
+            <th style="width:13%">Precio (€)</th>
+            <th style="width:14%">Estado</th>
+            <th style="width:12%">€/m²</th>
+            <th style="width:4%"></th>
+          </tr>
+        </thead>
+        <tbody id="comp-tbody"></tbody>
+      </table>
+      <button class="btn-add-row" onclick="addComparable()">+ Añadir comparable</button>
+    </div>
+    <div class="market-results" id="market-results">
+      <div>
+        <span class="ms-label">Comparables válidos</span>
+        <span class="ms-value" id="stat-count">0</span>
+      </div>
+      <div>
+        <span class="ms-label">Mediana €/m²</span>
+        <span class="ms-value" id="stat-median">—</span>
+      </div>
+      <div>
+        <span class="ms-label">Precio transacción est. (–7,5%)</span>
+        <span class="ms-value" id="stat-disc">—</span>
+      </div>
+      <div>
+        <span class="ms-label">Precio pedido €/m²</span>
+        <span class="ms-value" id="stat-asking">—</span>
+      </div>
+      <div>
+        <span class="ms-label">Clasificación</span>
+        <span class="ms-value" id="stat-class">—</span>
+      </div>
+    </div>
+    <button class="btn-confirm" style="margin-top:24px" onclick="confirmStep3()">Análisis completado → Calcular rentabilidad</button>
+  `;
+  renderComparables();
+  calcMarketData();
+}
+
+// ─── COMPARABLES ─────────────────────────
+
+function renderComparables() {
+  const tbody = document.getElementById('comp-tbody');
+  if (!tbody) return;
+  if (state.comparables.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="6" class="comp-empty">Sin comparables. Añade al menos 6-8.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = state.comparables.map(c => compRowHTML(c)).join('');
+}
+
+function compRowHTML(c) {
+  const pm2 = (+c.m2 > 0 && +c.price > 0) ? Math.round(+c.price / +c.m2) : null;
+  const condOpts = [
+    ['buen-estado','Buen estado'],['obra-nueva','Obra nueva'],
+    ['a-reformar','A reformar'],['sin-datos','Sin datos'],
+  ].map(([v,l]) => `<option value="${v}" ${c.condition===v?'selected':''}>${l}</option>`).join('');
+  return `
+    <tr data-cid="${c.id}">
+      <td><input type="text" class="comp-inp comp-url" value="${c.url||''}" placeholder="https://www.idealista.com/..." onchange="updateComp('${c.id}','url',this.value)"></td>
+      <td><input type="number" class="comp-inp comp-num" value="${c.m2||''}" placeholder="m²" oninput="updateComp('${c.id}','m2',this.value)"></td>
+      <td><input type="number" class="comp-inp comp-num" value="${c.price||''}" placeholder="€" oninput="updateComp('${c.id}','price',this.value)"></td>
+      <td><select class="comp-sel" onchange="updateComp('${c.id}','condition',this.value)">${condOpts}</select></td>
+      <td class="comp-pm2" id="pm2-${c.id}">${pm2 ? pm2.toLocaleString('es-ES')+' €/m²' : '—'}</td>
+      <td><button class="btn-del" onclick="deleteComp('${c.id}')">✕</button></td>
+    </tr>`;
+}
+
+function addComparable() {
+  state.comparables.push({ id: 'c'+Date.now(), url:'', m2:'', price:'', condition:'buen-estado' });
+  save();
+  renderComparables();
+  calcMarketData();
+}
+
+function updateComp(id, field, value) {
+  const c = state.comparables.find(x => x.id === id);
+  if (!c) return;
+  c[field] = (field === 'm2' || field === 'price') ? (parseFloat(value) || '') : value;
+  // Actualizar €/m² de esa fila en tiempo real
+  if (field === 'm2' || field === 'price') {
+    const cell = document.getElementById('pm2-' + id);
+    if (cell) cell.textContent = (+c.m2 > 0 && +c.price > 0)
+      ? Math.round(+c.price / +c.m2).toLocaleString('es-ES') + ' €/m²' : '—';
+  }
+  save();
+  calcMarketData();
+}
+
+function deleteComp(id) {
+  state.comparables = state.comparables.filter(c => c.id !== id);
+  save();
+  renderComparables();
+  calcMarketData();
+}
+
+function parsePrice(s) {
+  if (!s) return 0;
+  // Formato español: 450.000 € → quitar puntos de miles, coma = decimal
+  const clean = String(s).replace(/[^\d,.]/g, '').replace(/\./g, '').replace(',', '.');
+  return parseFloat(clean) || 0;
+}
+
+function calcMarketData() {
+  const valid = state.comparables.filter(c => +c.m2 > 0 && +c.price > 0);
+  const countEl = document.getElementById('stat-count');
+  if (countEl) countEl.textContent = valid.length;
+
+  if (valid.length === 0) {
+    ['stat-median','stat-disc','stat-asking','stat-class'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) { el.textContent = '—'; el.className = 'ms-value'; }
+    });
+    state.marketData = { median: null, discounted: null, classification: null };
+    save();
+    return;
+  }
+
+  const pm2s = valid.map(c => +c.price / +c.m2).sort((a, b) => a - b);
+  const n = pm2s.length;
+  const median = n % 2 === 0 ? (pm2s[n/2-1] + pm2s[n/2]) / 2 : pm2s[Math.floor(n/2)];
+  const discounted = median * 0.925;
+
+  const medEl = document.getElementById('stat-median');
+  const discEl = document.getElementById('stat-disc');
+  if (medEl) medEl.textContent = Math.round(median).toLocaleString('es-ES') + ' €/m²';
+  if (discEl) discEl.textContent = Math.round(discounted).toLocaleString('es-ES') + ' €/m²';
+
+  // Clasificación precio pedido vs mediana
+  const askingTotal = parsePrice(state.docStatus['precio']?.price);
+  const surface = parseFloat(state.assetInfo?.surface) || 0;
+  const askEl = document.getElementById('stat-asking');
+  const clsEl = document.getElementById('stat-class');
+  let classification = null;
+
+  if (askingTotal > 0 && surface > 0) {
+    const askPm2 = askingTotal / surface;
+    if (askEl) askEl.textContent = Math.round(askPm2).toLocaleString('es-ES') + ' €/m²';
+    const diff = (askPm2 - median) / median * 100;
+    let label, cls;
+    if (diff <= 10)      { label = `En mercado (${diff > 0 ? '+' : ''}${diff.toFixed(1)}%)`; cls = 'price-ok'; }
+    else if (diff <= 25) { label = `Ajustado (+${diff.toFixed(1)}%)`; cls = 'price-warn'; }
+    else                 { label = `Fuera de mercado (+${diff.toFixed(1)}%) — NO PASA`; cls = 'price-bad'; }
+    if (clsEl) { clsEl.textContent = label; clsEl.className = 'ms-value ' + cls; }
+    classification = { label, cls, diff };
+  } else {
+    if (askEl) askEl.textContent = askingTotal > 0 ? fmtEur(askingTotal) + ' total' : 'Ver Paso 2';
+    if (clsEl) clsEl.textContent = surface > 0 ? 'Introduce precio en Paso 2' : 'Introduce superficie en Paso 1';
+  }
+
+  state.marketData = { median, discounted, classification };
+  save();
+}
+
+function confirmStep3() {
+  state.currentStep = Math.max(state.currentStep, 4);
+  setStepDone(3);
+  unlockStep(4);
+  renderStep4();
+  scrollToStep(4);
+  save();
+}
+
+// ═══════════════════════════════════════════
+// STEP 4 — RENTABILIDAD
+// ═══════════════════════════════════════════
+
+function renderStep4() {
+  const body = document.getElementById('step4-body');
+  const strat = state.strategy;
+  let html = '';
+
+  if (strat === 'renta') {
+    html = `
+      <div class="info-box"><strong>Fórmula:</strong> Yield Neto = (Renta anual – IBI – Comunidad – Seguros – 1 mes vacío) / Precio compra × 100<br><strong>Umbral mínimo: 6%+</strong> (zonas prime: 4-5%)</div>
+      <div class="formula-box"><span>Yield Neto</span> = (Renta anual – IBI – Comunidad – Seguros – Vacío) ÷ Precio compra × 100</div>
+      <div class="section-label">Introduce los datos</div>
+      <div class="calc-grid">
+        <div class="calc-field"><label>Precio de compra (€)</label><input type="number" id="c-precio" placeholder="ej. 450000" oninput="calcRenta()"></div>
+        <div class="calc-field"><label>Renta mensual estimada (€)</label><input type="number" id="c-renta" placeholder="ej. 2500" oninput="calcRenta()"></div>
+        <div class="calc-field"><label>IBI anual (€)</label><input type="number" id="c-ibi" placeholder="ej. 800" oninput="calcRenta()"></div>
+        <div class="calc-field"><label>Gastos comunidad anuales (€)</label><input type="number" id="c-com" placeholder="ej. 600" oninput="calcRenta()"></div>
+        <div class="calc-field"><label>Seguro anual (€)</label><input type="number" id="c-seg" placeholder="ej. 400" oninput="calcRenta()"></div>
+        <div class="calc-field"><label>Gastos de compra (%, orientativo 10-12%)</label><input type="number" id="c-gastos" placeholder="10.5" oninput="calcRenta()"></div>
+      </div>
+      <div id="result-box"></div>
+      <hr class="divider">
+      <div class="section-label">Tres escenarios</div>
+      <div class="scenarios-grid">
+        <div class="scenario-card pesimista"><div class="sc-label">Pesimista</div><div class="sc-desc">Precio sin descuento. Renta –10%. Gastos reales.</div><div class="sc-value" id="sc-pes">—</div></div>
+        <div class="scenario-card realista"><div class="sc-label">Realista</div><div class="sc-desc">Precio –7%. Renta de mercado. Gastos normales.</div><div class="sc-value" id="sc-real">—</div></div>
+        <div class="scenario-card optimista"><div class="sc-label">Optimista</div><div class="sc-desc">Precio –12%. Renta alta del rango. Gastos ajustados.</div><div class="sc-value" id="sc-opt">—</div></div>
+      </div>`;
+  } else if (strat === 'value-add' || strat === 'cambio-uso') {
+    html = `
+      <div class="info-box"><strong>Fórmula:</strong> Margen % = (PVP final – Precio compra – Coste obra – Gastos) / Inversión total × 100<br><strong>Umbral mínimo: 20%+</strong> sobre inversión total.</div>
+      <div class="formula-box"><span>Margen %</span> = (PVP final – Precio compra – Coste obra – Gastos) ÷ Inversión total × 100</div>
+      <div class="section-label">Introduce los datos</div>
+      <div class="calc-grid">
+        <div class="calc-field"><label>Precio de compra (€)</label><input type="number" id="c-precio" placeholder="ej. 300000" oninput="calcValueAdd()"></div>
+        <div class="calc-field"><label>Coste de obra estimado (€)</label><input type="number" id="c-obra" placeholder="ej. 150000" oninput="calcValueAdd()"></div>
+        <div class="calc-field"><label>Gastos de compra (%, orientativo 10-12%)</label><input type="number" id="c-gastos" placeholder="10.5" oninput="calcValueAdd()"></div>
+        <div class="calc-field"><label>Otros gastos (proyecto, licencias…) (€)</label><input type="number" id="c-otros" placeholder="ej. 15000" oninput="calcValueAdd()"></div>
+        <div class="calc-field"><label>Precio de venta del producto final (€)</label><input type="number" id="c-pvp" placeholder="ej. 580000" oninput="calcValueAdd()"></div>
+        <div class="calc-field"><label>Gastos de venta (%, orientativo 3-5%)</label><input type="number" id="c-vgtos" placeholder="3" oninput="calcValueAdd()"></div>
+      </div>
+      <div id="result-box"></div>
+      <hr class="divider">
+      <div class="section-label">Tres escenarios</div>
+      <div class="scenarios-grid">
+        <div class="scenario-card pesimista"><div class="sc-label">Pesimista</div><div class="sc-desc">Precio sin descuento. Obra +15%. PVP –5%.</div><div class="sc-value" id="sc-pes">—</div></div>
+        <div class="scenario-card realista"><div class="sc-label">Realista</div><div class="sc-desc">Precio –7%. Obra según presupuesto. PVP de mercado.</div><div class="sc-value" id="sc-real">—</div></div>
+        <div class="scenario-card optimista"><div class="sc-label">Optimista</div><div class="sc-desc">Precio –12%. Obra –5%. PVP +5%.</div><div class="sc-value" id="sc-opt">—</div></div>
+      </div>`;
+  } else if (strat === 'promocion') {
+    html = `
+      <div class="info-box"><strong>Método Residual:</strong> Precio máximo del terreno = Valor producto final – Construcción – Urbanización – Gastos – Beneficio promotor mínimo<br><strong>Beneficio promotor mínimo: 15-20%</strong> sobre inversión total.</div>
+      <div class="formula-box"><span>Precio máx. terreno</span> = Valor final – Construcción – Urbanización – Gastos – (Inversión × 0,18)</div>
+      <div class="section-label">Introduce los datos</div>
+      <div class="calc-grid">
+        <div class="calc-field"><label>m² construibles vendibles</label><input type="number" id="c-m2" placeholder="ej. 2500" oninput="calcResidual()"></div>
+        <div class="calc-field"><label>Precio de venta €/m² (producto final)</label><input type="number" id="c-pvm2" placeholder="ej. 3500" oninput="calcResidual()"></div>
+        <div class="calc-field"><label>Coste construcción €/m² (residencial: 1.200-1.600)</label><input type="number" id="c-const" placeholder="ej. 1400" oninput="calcResidual()"></div>
+        <div class="calc-field"><label>Coste urbanización (€)</label><input type="number" id="c-urb" placeholder="ej. 50000" oninput="calcResidual()"></div>
+        <div class="calc-field"><label>Gastos y honorarios técnicos (€)</label><input type="number" id="c-gtos" placeholder="ej. 80000" oninput="calcResidual()"></div>
+        <div class="calc-field"><label>Precio pedido por el terreno (€)</label><input type="number" id="c-pedido" placeholder="ej. 600000" oninput="calcResidual()"></div>
+      </div>
+      <div id="result-box"></div>
+      <hr class="divider">
+      <div class="section-label">Tres escenarios</div>
+      <div class="scenarios-grid">
+        <div class="scenario-card pesimista"><div class="sc-label">Pesimista</div><div class="sc-desc">Construcción +10%. Ventas –5%. Más imprevistos.</div><div class="sc-value" id="sc-pes">—</div></div>
+        <div class="scenario-card realista"><div class="sc-label">Realista</div><div class="sc-desc">Datos introducidos sin variación.</div><div class="sc-value" id="sc-real">—</div></div>
+        <div class="scenario-card optimista"><div class="sc-label">Optimista</div><div class="sc-desc">Ventas +5%. Construcción ajustada.</div><div class="sc-value" id="sc-opt">—</div></div>
+      </div>`;
+  }
+
+  html += `<button class="btn-confirm" onclick="confirmStep4()">Rentabilidad calculada → Verificar red flags</button>`;
+  body.innerHTML = html;
+}
+
+function p(id) { return +document.getElementById(id)?.value || 0; }
+function fmtPct(v) { return (!isFinite(v)||isNaN(v)) ? '—' : v.toFixed(2)+'%'; }
+function fmtEur(v) { return (!isFinite(v)||isNaN(v)) ? '—' : Math.round(v).toLocaleString('es-ES')+' €'; }
+
+function setResult(val, threshold, label, extra, pes, real, opt) {
+  const pass = val >= threshold;
+  document.getElementById('result-box').innerHTML = `
+    <div class="result-box ${pass?'pass':'fail'}">
+      <div class="res-label">${label}</div>
+      <div class="res-value">${fmtPct(val)}</div>
+      <div class="res-threshold">${extra}</div>
+      <div class="res-verdict">${pass ? 'SUPERA EL UMBRAL MÍNIMO' : 'POR DEBAJO DEL UMBRAL MÍNIMO'}</div>
+    </div>`;
+  state.calcValues = { val, pass, pes: pes ?? null, real: real ?? val, opt: opt ?? null };
+  save();
+}
+
+function calcRenta() {
+  const precio=p('c-precio'), renta=p('c-renta'), ibi=p('c-ibi'), com=p('c-com'), seg=p('c-seg'), gPct=p('c-gastos')||10.5;
+  if (!precio||!renta) return;
+  const neta = renta*12 - ibi - com - seg - renta;
+  const total = precio*(1+gPct/100);
+  const y = neta/total*100;
+  const yld = (pr, re) => { const n=re*12-ibi-com-seg-re; return n/(pr*(1+gPct/100))*100; };
+  const yPes = yld(precio, renta*0.9), yReal = yld(precio*0.93, renta), yOpt = yld(precio*0.88, renta*1.05);
+  setResult(y, 6, 'Yield Neto Calculado', `Umbral mínimo: 6%+ | Precio total con gastos: ${fmtEur(total)}`, yPes, yReal, yOpt);
+  document.getElementById('sc-pes').textContent = fmtPct(yPes);
+  document.getElementById('sc-real').textContent = fmtPct(yReal);
+  document.getElementById('sc-opt').textContent = fmtPct(yOpt);
+}
+
+function calcValueAdd() {
+  const precio=p('c-precio'), obra=p('c-obra'), gPct=p('c-gastos')||10.5, otros=p('c-otros'), pvp=p('c-pvp'), vPct=p('c-vgtos')||3;
+  if (!precio||!pvp) return;
+  const inv = precio + obra + precio*gPct/100 + otros;
+  const ben = pvp - pvp*vPct/100 - inv;
+  const m = ben/inv*100;
+  const mrg = (pr, ob, pv) => { const i=pr+ob+pr*gPct/100+otros; return (pv-pv*vPct/100-i)/i*100; };
+  const mPes = mrg(precio, obra*1.15, pvp*0.95), mReal = mrg(precio*0.93, obra, pvp), mOpt = mrg(precio*0.88, obra*0.95, pvp*1.05);
+  setResult(m, 20, 'Margen sobre Inversión Total', `Umbral mínimo: 20%+ | Inversión total: ${fmtEur(inv)} | Beneficio: ${fmtEur(ben)}`, mPes, mReal, mOpt);
+  document.getElementById('sc-pes').textContent = fmtPct(mPes);
+  document.getElementById('sc-real').textContent = fmtPct(mReal);
+  document.getElementById('sc-opt').textContent = fmtPct(mOpt);
+}
+
+function calcResidual() {
+  const m2=p('c-m2'), pvm2=p('c-pvm2'), c=p('c-const'), urb=p('c-urb'), gtos=p('c-gtos'), pedido=p('c-pedido');
+  if (!m2||!pvm2||!c) return;
+  const vf = m2*pvm2, constr = m2*c;
+  const benMin = vf*0.18;
+  const maxTerreno = vf - constr - urb - gtos - benMin;
+  const inv = constr + urb + gtos + (pedido||maxTerreno);
+  const margen = pedido ? (vf-constr-urb-gtos-pedido)/( constr+urb+gtos+pedido)*100 : 18;
+  const pass = !pedido || pedido <= maxTerreno;
+  document.getElementById('result-box').innerHTML = `
+    <div class="result-box ${pass?'pass':'fail'}">
+      <div class="res-label">Precio máximo del terreno (residual)</div>
+      <div class="res-value">${fmtEur(maxTerreno)}</div>
+      <div class="res-threshold">Precio pedido: ${fmtEur(pedido)} | Valor final: ${fmtEur(vf)} | Margen real: ${fmtPct(margen)}</div>
+      <div class="res-verdict">${pass ? 'EL PRECIO PEDIDO PERMITE EL MARGEN MÍNIMO' : 'PRECIO PEDIDO EXCEDE EL RESIDUAL — NEGOCIAR O DESCARTAR'}</div>
+    </div>`;
+  const res = (pv, co, ur, gt, pe) => { const v=m2*pv, inv=m2*co+ur+gt+pe; return (v-inv)/inv*100; };
+  const rPes = res(pvm2*0.95, c*1.1, urb, gtos*1.1, pedido);
+  const rReal = res(pvm2, c, urb, gtos, pedido);
+  const rOpt = res(pvm2*1.05, c, urb, gtos, pedido);
+  state.calcValues = { val: margen, pass, pes: rPes, real: rReal, opt: rOpt };
+  save();
+  document.getElementById('sc-pes').textContent = fmtPct(rPes);
+  document.getElementById('sc-real').textContent = fmtPct(rReal);
+  document.getElementById('sc-opt').textContent = fmtPct(rOpt);
+}
+
+function confirmStep4() {
+  state.currentStep = Math.max(state.currentStep, 5);
+  setStepDone(4);
+  unlockStep(5);
+  renderStep5();
+  scrollToStep(5);
+  save();
+}
+
+// ═══════════════════════════════════════════
+// STEP 5 — NOTAS INTERNAS
+// ═══════════════════════════════════════════
+
+function renderStep5() {
+  document.getElementById('step5-body').innerHTML = `
+    <div class="info-box">
+      Anota aquí cualquier información relevante sobre el activo. <strong>No aparecerá en la ficha técnica del inversor</strong>, pero se adjuntará al documento de Drive.
+    </div>
+    <textarea id="notes-ta" class="notes-ta"
+      placeholder="Estado del activo, condiciones de pago, características especiales, notas internas, impresiones de la visita..."
+      oninput="state.notes = this.value; save();">${state.notes || ''}</textarea>
+    <button class="btn-confirm" onclick="confirmStep5()">Notas guardadas → Veredicto y ficha</button>
+  `;
+}
+
+function confirmStep5() {
+  const ta = document.getElementById('notes-ta');
+  if (ta) state.notes = ta.value;
+  state.currentStep = Math.max(state.currentStep, 6);
+  setStepDone(5);
+  unlockStep(6);
+  renderStep6();
+  scrollToStep(6);
+  save();
+}
+
+// ═══════════════════════════════════════════
+// STEP 6 — RED FLAGS + VEREDICTO + FICHA
+// ═══════════════════════════════════════════
+
+function renderStep6() {
+  const allFlags = [...RED_FLAGS_COMMON, ...(RED_FLAGS_SPECIFIC[state.asset]||[])];
+  document.getElementById('step6-body').innerHTML = `
+    <div class="section-label">Verificación de red flags</div>
+    <div class="info-box">Marca los red flags que apliquen a esta operación. Cualquiera es motivo suficiente para descarte automático.</div>
+    <div class="flags-list">
+      ${allFlags.map((f, i) => `
+        <div class="flag-item" id="flag-${i}">
+          <input type="checkbox" id="f${i}" ${state.flags[i]?'checked':''} onchange="setFlag(${i},this.checked)">
+          <label for="f${i}">${f}</label>
+        </div>`).join('')}
+    </div>
+    <hr class="divider">
+    <div id="verdict-container"></div>
+    <button class="btn-confirm" onclick="renderVerdict()">Generar veredicto</button>
+    <hr class="divider">
+    <div class="section-label">Ficha técnica del activo</div>
+    <div class="info-box">Genera la ficha lista para enviar al inversor. <strong>Las notas internas no se incluyen.</strong></div>
+    <div id="ficha-container"></div>
+    <button class="btn-confirm" style="background:var(--pizarra)" onclick="generateFicha()">Generar ficha técnica</button>
+    <div id="ficha-print" style="display:none"></div>
+    <hr class="divider">
+    <div class="section-label">Enviar a Google Drive</div>
+    <div class="info-box">
+      Crea la carpeta del activo en Drive, sube los documentos adjuntos y genera el Google Doc con las notas internas.<br>
+      <span style="font-size:11px;color:#aaa">Los archivos se suben si fueron adjuntados en esta sesión. Si recargaste la página, ve al Paso 2 y adjúntalos de nuevo antes de enviar.</span>
+    </div>
+    <div class="drive-setup">
+      <div class="info-field">
+        <label>URL del Google Apps Script <span class="info-hint">— configúralo una vez desde tu Google Drive</span></label>
+        <input type="text" id="gas-url-input" placeholder="https://script.google.com/macros/s/.../exec"
+          value="${getGasUrl()}" oninput="setGasUrl(this.value)">
+      </div>
+    </div>
+    <button class="btn-confirm btn-drive" id="btn-drive" onclick="sendToDrive()">Crear carpeta en Drive y subir archivos</button>
+    <div id="drive-result"></div>
+  `;
+  allFlags.forEach((_,i) => { if(state.flags[i]) document.getElementById('flag-'+i)?.classList.add('flagged'); });
+  if (state.driveData?.folderUrl) renderDriveResult();
+}
+
+function setFlag(i, val) {
+  state.flags[i] = val;
+  document.getElementById('flag-'+i)?.classList.toggle('flagged', val);
+  save();
+}
+
+function renderVerdict() {
+  const flagCount = Object.values(state.flags).filter(Boolean).length;
+  const calcPass = state.calcValues?.pass;
+  const pendingDocs = Object.values(state.docStatus).filter(v => v?.status === 'no-tengo').length;
+  const mkt = state.marketData?.classification;
+  const priceOk = !mkt || mkt.cls !== 'price-bad';
+
+  let verdict, title, detail;
+  if (flagCount > 0) {
+    verdict='no-pasa'; title='No pasa el filtro';
+    detail=`Se detectaron <strong>${flagCount} red flag(s)</strong>. Cualquier red flag es motivo de descarte. Revisar si tiene solución antes de continuar.`;
+  } else if (calcPass === false) {
+    verdict='no-pasa'; title='No pasa el filtro';
+    detail='La rentabilidad no supera el umbral mínimo de Verum Capital. No presentar a la comunidad.';
+  } else if (!priceOk) {
+    verdict='no-pasa'; title='No pasa el filtro';
+    detail='El precio pedido está más del 25% por encima de la mediana de comparables. No pasa el filtro de precio.';
+  } else if (calcPass === true && pendingDocs === 0 && priceOk) {
+    verdict='pasa'; title='Pasa el filtro';
+    detail='Rentabilidad supera umbral, precio en mercado, sin red flags y documentación completa. Lista para preparar dosier.';
+  } else {
+    verdict='revisar'; title='Revisar antes de presentar';
+    const issues = [];
+    if (pendingDocs > 0) issues.push(`${pendingDocs} doc(s) pendiente(s)`);
+    if (calcPass === null || calcPass === undefined) issues.push('rentabilidad sin calcular');
+    detail = `Rentabilidad favorable pero pendiente: ${issues.join(', ')}.`;
+  }
+
+  const pills = [
+    { label:`Activo: ${ASSET_LABELS[state.asset]}`, cls:'ok' },
+    { label:`Estrategia: ${STRATEGY_LABELS[state.strategy]?.label}`, cls:'ok' },
+    { label:`Precio: ${mkt?.label || 'Sin comparables'}`, cls: mkt ? (mkt.cls === 'price-ok' ? 'ok' : mkt.cls === 'price-warn' ? 'warn' : 'bad') : 'warn' },
+    { label:`Docs pendientes: ${pendingDocs}`, cls: pendingDocs===0?'ok':'warn' },
+    { label:`Red flags: ${flagCount}`, cls: flagCount===0?'ok':'bad' },
+    { label:`Rentabilidad: ${calcPass===true?'Supera umbral':calcPass===false?'No supera':'Sin calcular'}`, cls: calcPass===true?'ok':calcPass===false?'bad':'warn' },
+  ];
+
+  document.getElementById('verdict-container').innerHTML = `
+    <div class="verdict-box ${verdict}">
+      <div class="verdict-label">Veredicto Verum Capital</div>
+      <div class="verdict-title">${title}</div>
+      <div class="verdict-detail">${detail}</div>
+      <div class="summary-pills">${pills.map(p=>`<div class="pill ${p.cls}">${p.label}</div>`).join('')}</div>
+    </div>`;
+}
+
+function generateFicha() {
+  const ai = state.assetInfo || {};
+  const askingTotal = parsePrice(state.docStatus['precio']?.price);
+  const allDocs = [...COMMON_DOCS, ...(SPECIFIC_DOCS[state.asset]||[])];
+  const allFlags = [...RED_FLAGS_COMMON, ...(RED_FLAGS_SPECIFIC[state.asset]||[])];
+  const md = state.marketData;
+  const cv = state.calcValues;
+
+  // Tabla comparables
+  const validComps = state.comparables.filter(c => +c.m2 > 0 && +c.price > 0);
+  const condLabels = {'obra-nueva':'Obra nueva','buen-estado':'Buen estado','a-reformar':'A reformar','sin-datos':'Sin datos'};
+  const compRows = state.comparables.length > 0
+    ? state.comparables.map(c => {
+        const pm2 = +c.m2 > 0 && +c.price > 0 ? Math.round(+c.price / +c.m2).toLocaleString('es-ES')+' €/m²' : '—';
+        const urlText = c.url ? (c.url.length > 55 ? c.url.slice(0,55)+'…' : c.url) : '—';
+        return `<tr>
+          <td>${c.url ? `<a href="${c.url}" target="_blank" style="color:var(--oro)">${urlText}</a>` : '—'}</td>
+          <td>${c.m2||'—'} m²</td>
+          <td>${c.price ? (+c.price).toLocaleString('es-ES')+' €' : '—'}</td>
+          <td>${condLabels[c.condition]||'—'}</td>
+          <td style="font-weight:500">${pm2}</td>
+        </tr>`;
+      }).join('')
+    : '<tr><td colspan="5" style="text-align:center;color:#aaa;font-style:italic">Sin comparables registrados</td></tr>';
+
+  // Mercado
+  const mktHTML = md.median ? `
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:16px">
+      <div style="background:var(--arena);padding:12px;border-radius:6px"><div class="ms-label" style="color:#888">Mediana €/m²</div><div style="font-size:18px;font-weight:500">${Math.round(md.median).toLocaleString('es-ES')} €/m²</div></div>
+      <div style="background:var(--arena);padding:12px;border-radius:6px"><div class="ms-label" style="color:#888">Transacción est. (–7,5%)</div><div style="font-size:18px;font-weight:500">${Math.round(md.discounted).toLocaleString('es-ES')} €/m²</div></div>
+      ${askingTotal && ai.surface ? `<div style="background:var(--arena);padding:12px;border-radius:6px"><div class="ms-label" style="color:#888">Precio pedido €/m²</div><div style="font-size:18px;font-weight:500">${Math.round(askingTotal/parseFloat(ai.surface)).toLocaleString('es-ES')} €/m²</div></div>` : ''}
+      ${md.classification ? `<div style="background:var(--arena);padding:12px;border-radius:6px"><div class="ms-label" style="color:#888">Clasificación</div><div style="font-size:14px;font-weight:600" class="${md.classification.cls.replace('price-','text-')}">${md.classification.label}</div></div>` : ''}
+    </div>` : '<p style="font-size:12px;color:#aaa;font-style:italic">Sin datos de mercado.</p>';
+
+  // Rentabilidad
+  const isResidual = state.strategy === 'promocion';
+  const fmt = v => (v === null || v === undefined) ? '—' : isResidual ? fmtEur(v) : fmtPct(v);
+  const rentHTML = (cv && cv.val !== null && cv.val !== undefined) ? `
+    <div class="ficha-scenarios">
+      <div class="ficha-sc pes"><div class="sc-lbl">Pesimista</div><div class="sc-val">${fmt(cv.pes)}</div></div>
+      <div class="ficha-sc real"><div class="sc-lbl">Realista</div><div class="sc-val">${fmt(cv.val)}</div></div>
+      <div class="ficha-sc opt"><div class="sc-lbl">Optimista</div><div class="sc-val">${fmt(cv.opt)}</div></div>
+    </div>
+    <p style="font-size:11px;color:#666;margin-top:6px">${THRESHOLDS[state.strategy]?.label} &nbsp;|&nbsp; <span class="${cv.pass?'text-ok':'text-bad'}">${cv.pass?'SUPERA EL UMBRAL':'NO SUPERA EL UMBRAL'}</span></p>`
+    : '<p style="font-size:12px;color:#aaa;font-style:italic">Rentabilidad no calculada.</p>';
+
+  // Red flags
+  const activeFlags = allFlags.filter((_,i) => state.flags[i]);
+  const flagsHTML = activeFlags.length > 0
+    ? activeFlags.map(f => `<div class="ficha-flag-item">⚠ ${f}</div>`).join('')
+    : '<div class="ficha-no-flags">✓ Sin red flags detectados</div>';
+
+  // Documentación
+  const docsRows = allDocs.map(d => {
+    const st = state.docStatus[d.id] || {};
+    const icon = st.status === 'tengo' ? '✓' : st.status === 'no-tengo' ? '○' : '—';
+    const cls = st.status === 'tengo' ? 'text-ok' : st.status === 'no-tengo' ? 'text-bad' : '';
+    const file = st.fileName ? ` <em style="color:#888;font-size:11px">[${st.fileName}]</em>` : '';
+    return `<tr><td class="${cls}" style="width:32px">${icon}</td><td>${d.name}${file}</td><td style="color:#888;font-size:11px;white-space:nowrap">${st.status==='tengo'?'Disponible':st.status==='no-tengo'?'Por pedir':'—'}</td></tr>`;
+  }).join('');
+
+  const fichaHTML = `
+    <div class="ficha">
+      <div class="ficha-hdr">
+        <div class="ficha-logo">V</div>
+        <div><div class="ficha-brand">Verum Capital</div><div class="ficha-sub">Real Estate Intelligence</div></div>
+        <div class="ficha-date-area"><div class="fd">${ai.date||''}</div><div class="fa">Analista: ${ai.analyst||'—'}</div></div>
+      </div>
+      <div class="ficha-portada">
+        <div class="ficha-tag">${ASSET_LABELS[state.asset]} — ${STRATEGY_LABELS[state.strategy]?.label}</div>
+        <div class="ficha-nombre">${ai.name||'Sin nombre'}</div>
+        <div class="ficha-dir">${ai.address||''} ${ai.surface ? '· '+ai.surface+' m²' : ''}</div>
+      </div>
+      <div class="ficha-sec">
+        <div class="ficha-sec-lbl">Análisis de mercado</div>
+        ${mktHTML}
+        <table class="ficha-tbl"><thead><tr><th>URL / Referencia</th><th>m²</th><th>Precio</th><th>Estado</th><th>€/m²</th></tr></thead><tbody>${compRows}</tbody></table>
+      </div>
+      <div class="ficha-sec">
+        <div class="ficha-sec-lbl">Rentabilidad</div>
+        ${rentHTML}
+      </div>
+      <div class="ficha-sec">
+        <div class="ficha-sec-lbl">Red flags</div>
+        ${flagsHTML}
+      </div>
+      <div class="ficha-sec">
+        <div class="ficha-sec-lbl">Documentación</div>
+        <table class="ficha-tbl"><thead><tr><th></th><th>Documento</th><th>Estado</th></tr></thead><tbody>${docsRows}</tbody></table>
+      </div>
+      <div class="ficha-ftr">
+        <span>Verum Capital — Documento confidencial interno</span>
+        <span>Análisis orientativo sujeto a verificación</span>
+      </div>
+    </div>
+    <div style="display:flex;gap:12px;margin-top:16px;flex-wrap:wrap">
+      <button class="btn-confirm" onclick="window.print()">Imprimir / Exportar PDF</button>
+    </div>`;
+
+  document.getElementById('ficha-container').innerHTML = fichaHTML;
+  // Copia en #ficha-print para el CSS de impresión
+  document.getElementById('ficha-print').innerHTML = fichaHTML;
+  document.getElementById('ficha-print').style.display = 'none';
+  document.getElementById('ficha-container').scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+// ═══════════════════════════════════════════
+// GOOGLE DRIVE
+// ═══════════════════════════════════════════
+
+async function sendToDrive() {
+  const url = getGasUrl().trim();
+  if (!url) {
+    alert('Introduce la URL del Google Apps Script antes de continuar.');
+    document.getElementById('gas-url-input')?.focus();
+    return;
+  }
+
+  const btn = document.getElementById('btn-drive');
+  const resultEl = document.getElementById('drive-result');
+  btn.disabled = true;
+  btn.textContent = 'Creando carpeta…';
+  resultEl.innerHTML = '';
+
+  try {
+    const ai = state.assetInfo || {};
+    const folderName = ai.name || 'Activo sin nombre';
+
+    // 1. Crear carpeta + Google Doc con notas internas
+    const initPayload = {
+      action: 'init',
+      folderName,
+      docTitle: `Notas internas — ${folderName}`,
+      assetName: folderName,
+      address: ai.address || '',
+      surface: ai.surface || '',
+      date: ai.date || '',
+      analyst: ai.analyst || '',
+      contactName: ai.contactName || '',
+      contactType: ai.contactType || '',
+      assetType: ASSET_LABELS[state.asset] || '',
+      strategy: STRATEGY_LABELS[state.strategy]?.label || '',
+      internalNotes: state.notes || '',
+    };
+
+    const initRes = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify(initPayload),
+    });
+    const initData = await initRes.json();
+    if (!initData.folderId) throw new Error(initData.error || 'No se pudo crear la carpeta');
+
+    state.driveData = { folderId: initData.folderId, folderUrl: initData.folderUrl, docUrl: initData.docUrl };
+    save();
+
+    // 2. Subir archivos adjuntos disponibles en memoria
+    const attachable = Object.entries(fileObjects).filter(([id, f]) => f && state.docStatus[id]?.fileName);
+    if (attachable.length > 0) {
+      for (let i = 0; i < attachable.length; i++) {
+        const [docId, file] = attachable[i];
+        btn.textContent = `Subiendo archivos (${i + 1}/${attachable.length})…`;
+        const base64 = await fileToBase64(file);
+        await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify({
+            action: 'upload_file',
+            folderId: initData.folderId,
+            fileName: file.name,
+            mimeType: file.type || 'application/octet-stream',
+            base64Data: base64,
+          }),
+        });
+      }
+    }
+
+    renderDriveResult(attachable.length);
+  } catch (err) {
+    resultEl.innerHTML = `<div class="info-box" style="border-color:#e99;background:#fff5f0;color:#c06050">
+      <strong>Error:</strong> ${err.message}<br>
+      <small>Comprueba que la URL del script es correcta y que está desplegado como "Cualquier usuario".</small>
+    </div>`;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Crear carpeta en Drive y subir archivos';
+  }
+}
+
+function renderDriveResult(filesUploaded) {
+  const d = state.driveData;
+  if (!d?.folderUrl) return;
+  const files = filesUploaded !== undefined ? filesUploaded : Object.keys(fileObjects).length;
+  document.getElementById('drive-result').innerHTML = `
+    <div class="drive-result">
+      <div class="dr-title">✓ Creado en Google Drive</div>
+      <div class="drive-link">📁 <a href="${d.folderUrl}" target="_blank">Abrir carpeta en Drive</a></div>
+      ${d.docUrl ? `<div class="drive-link">📄 <a href="${d.docUrl}" target="_blank">Abrir notas internas (Google Doc)</a></div>` : ''}
+      ${files > 0 ? `<div class="drive-progress">${files} archivo(s) subido(s) a la carpeta.</div>` : '<div class="drive-progress">Sin archivos adjuntos en esta sesión.</div>'}
+    </div>`;
+}
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result.split(',')[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+// ═══════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════
+
+function setStepDone(n) {
+  const el = document.getElementById('step-'+n);
+  el.classList.replace('state-active','state-done');
+  const header = el.querySelector('.step-header');
+  const lock = header.querySelector('.lock-icon,.done-badge');
+  const badge = document.createElement('span');
+  badge.className = 'done-badge'; badge.textContent = 'Completado';
+  if (lock) lock.replaceWith(badge); else header.appendChild(badge);
+  const nav = document.querySelector(`.nav-step[data-step="${n}"]`);
+  if (nav) { nav.className = 'nav-step state-done'; nav.querySelector('.n').textContent = '✓'; }
+}
+
+function unlockStep(n) {
+  const el = document.getElementById('step-'+n);
+  el.classList.replace('state-locked','state-active');
+  const nav = document.querySelector(`.nav-step[data-step="${n}"]`);
+  if (nav) { nav.className = 'nav-step state-active'; nav.querySelector('.n').textContent = n; }
+}
+
+function scrollToStep(n) {
+  setTimeout(() => document.getElementById('step-'+n)?.scrollIntoView({behavior:'smooth',block:'start'}), 120);
+}
+
+// ═══════════════════════════════════════════
+// INIT — restore state on reload
+// ═══════════════════════════════════════════
+
+(function init() {
+  if (!state.asset) return;
+  // Ensure assetInfo exists (backwards compat with old saved state)
+  if (!state.assetInfo) {
+    state.assetInfo = { name:'', address:'', surface:'', date: new Date().toISOString().slice(0,10), analyst:'', contactName:'', contactType:'propietario' };
+  }
+
+  const assetOrder = ['local-cambio-uso','local-con-inquilino','local-vacio','edificio-renta','edificio-reforma','terreno','vivienda','nave'];
+  const idx = assetOrder.indexOf(state.asset);
+  const cards = document.querySelectorAll('#asset-grid .asset-card');
+  if (idx >= 0 && cards[idx]) cards[idx].classList.add('selected');
+
+  const strats = STRATEGIES[state.asset] || [];
+  if (strats.length > 1 && state.strategy) {
+    const stratSection = document.getElementById('step1-strategy');
+    stratSection.style.display = 'block';
+    document.getElementById('strategy-grid').innerHTML = strats.map(s =>
+      `<div class="asset-card ${state.strategy===s?'selected':''}" onclick="selectStrategy('${s}',this)">
+        <div class="ac-label">${STRATEGY_LABELS[s].label}</div>
+        <div class="ac-desc">${STRATEGY_LABELS[s].desc}</div>
+      </div>`).join('');
+  }
+
+  // Restore info form (always show if asset+strategy are set)
+  if (state.asset && state.strategy && state.currentStep < 2) {
+    showInfoForm();
+  }
+
+  if (state.currentStep >= 2) { setStepDone(1); unlockStep(2); renderStep2(); }
+  if (state.currentStep >= 3) { setStepDone(2); unlockStep(3); renderStep3(); }
+  if (state.currentStep >= 4) { setStepDone(3); unlockStep(4); renderStep4(); }
+  if (state.currentStep >= 5) { setStepDone(4); unlockStep(5); renderStep5(); }
+  if (state.currentStep >= 6) { setStepDone(5); unlockStep(6); renderStep6(); }
+})();
+</script>
+</body>
+</html>
