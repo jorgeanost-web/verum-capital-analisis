@@ -290,11 +290,110 @@ h3 { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 400
 .radio-group { display: flex; gap: 20px; align-items: center; padding: 8px 0; }
 .radio-option { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--carbon); cursor: pointer; user-select: none; }
 .radio-option input[type="radio"] { width: 16px; height: 16px; cursor: pointer; accent-color: var(--carbon); }
+
+/* ═══════════════════════════════════════════
+   DASHBOARD
+═══════════════════════════════════════════ */
+#view-dashboard { min-height: 100vh; background: var(--marfil); display: none; }
+#view-analysis { display: none; }
+
+.db-header-bar { background: var(--carbon); display: flex; align-items: center; gap: 16px; padding: 18px 32px; }
+.db-header-bar .logo-badge { width: 38px; height: 38px; background: var(--oro); color: var(--carbon); display: flex; align-items: center; justify-content: center; font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 700; flex-shrink: 0; }
+.db-header-bar .hd-title h1 { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; color: var(--marfil); font-weight: 600; letter-spacing: 0.01em; }
+.db-header-bar .hd-title span { font-family: 'Inter', sans-serif; font-size: 0.68rem; color: var(--arena); letter-spacing: 0.12em; text-transform: uppercase; }
+.btn-nueva-opp { margin-left: auto; background: var(--oro); color: var(--carbon); border: none; padding: 10px 22px; font-family: 'Inter', sans-serif; font-size: 0.82rem; font-weight: 700; letter-spacing: 0.05em; cursor: pointer; text-transform: uppercase; transition: background 0.15s; }
+.btn-nueva-opp:hover { background: #b8924a; }
+
+.db-container { max-width: 1140px; margin: 0 auto; padding: 36px 24px; }
+.db-top-bar { display: flex; align-items: center; gap: 16px; margin-bottom: 28px; flex-wrap: wrap; }
+.db-top-bar h2 { font-family: 'Cormorant Garamond', serif; font-size: 2rem; color: var(--pizarra); font-weight: 600; flex: 1; }
+#db-search { flex: 0 0 280px; padding: 10px 16px; border: 1px solid var(--arena); background: white; font-family: 'Inter', sans-serif; font-size: 0.85rem; color: var(--pizarra); outline: none; }
+#db-search:focus { border-color: var(--oro); }
+
+.resume-banner { background: var(--carbon); color: var(--marfil); padding: 14px 24px; margin-bottom: 24px; display: flex; align-items: center; gap: 16px; border-left: 4px solid var(--oro); }
+.resume-banner .rb-text { font-family: 'Inter', sans-serif; font-size: 0.88rem; flex: 1; }
+.resume-banner strong { color: var(--oro); }
+.btn-resume { background: var(--oro); color: var(--carbon); border: none; padding: 8px 18px; font-family: 'Inter', sans-serif; font-size: 0.8rem; font-weight: 700; cursor: pointer; letter-spacing: 0.04em; white-space: nowrap; }
+
+.db-loading { text-align: center; padding: 80px 20px; font-family: 'Inter', sans-serif; font-size: 0.9rem; color: #aaa; }
+.db-empty { text-align: center; padding: 80px 20px; }
+.db-empty h3 { font-family: 'Cormorant Garamond', serif; font-size: 2rem; color: var(--pizarra); margin-bottom: 10px; }
+.db-empty p { font-family: 'Inter', sans-serif; font-size: 0.9rem; color: #999; }
+
+.opp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+
+.opp-card { background: white; border: 1px solid var(--arena); display: flex; flex-direction: column; }
+.opp-card-top { padding: 18px 20px 14px; border-bottom: 1px solid #f0ebe0; }
+.opp-tipo { font-family: 'Inter', sans-serif; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--oro); }
+.opp-address { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; font-weight: 600; color: var(--carbon); margin: 5px 0 3px; line-height: 1.3; }
+.opp-name { font-family: 'Inter', sans-serif; font-size: 0.78rem; color: #aaa; }
+
+.opp-metrics { display: flex; gap: 0; border-bottom: 1px solid #f0ebe0; }
+.opp-metric { flex: 1; padding: 12px 20px; background: var(--marfil); }
+.opp-metric + .opp-metric { border-left: 1px solid #f0ebe0; }
+.opp-metric-label { font-family: 'Inter', sans-serif; font-size: 0.63rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #bbb; }
+.opp-metric-value { font-family: 'Inter', sans-serif; font-size: 1.05rem; font-weight: 700; color: var(--pizarra); margin-top: 3px; }
+
+.opp-card-bottom { padding: 10px 20px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #f0ebe0; }
+.opp-status-select { font-family: 'Inter', sans-serif; font-size: 0.72rem; padding: 4px 8px; border: 1px solid var(--arena); background: white; color: var(--pizarra); cursor: pointer; outline: none; }
+.opp-status-select:focus { border-color: var(--oro); }
+.opp-meta { font-family: 'Inter', sans-serif; font-size: 0.72rem; color: #bbb; margin-left: auto; text-align: right; line-height: 1.4; }
+
+.opp-actions { padding: 12px 20px; display: flex; gap: 8px; margin-top: auto; }
+.btn-opp { font-family: 'Inter', sans-serif; font-size: 0.78rem; font-weight: 600; padding: 8px 14px; border: 1px solid var(--arena); background: white; color: var(--pizarra); cursor: pointer; text-decoration: none; display: inline-block; letter-spacing: 0.03em; transition: all 0.15s; }
+.btn-opp:hover { border-color: var(--oro); color: var(--oro); }
+.btn-opp.dark { background: var(--carbon); color: var(--marfil); border-color: var(--carbon); }
+.btn-opp.dark:hover { background: var(--pizarra); border-color: var(--pizarra); }
+
+/* Back button in analysis view */
+.btn-back-dash { background: transparent; border: none; color: var(--arena); font-family: 'Inter', sans-serif; font-size: 0.8rem; cursor: pointer; padding: 0 12px 0 0; letter-spacing: 0.03em; opacity: 0.8; }
+.btn-back-dash:hover { opacity: 1; color: var(--marfil); }
+
+/* Loading overlay */
+#loading-overlay { display: none; position: fixed; inset: 0; background: rgba(58,58,54,0.7); z-index: 9999; align-items: center; justify-content: center; }
+#loading-overlay.active { display: flex; }
+.lo-box { background: white; padding: 36px 48px; text-align: center; }
+.lo-box p { font-family: 'Inter', sans-serif; font-size: 0.9rem; color: var(--pizarra); margin-top: 12px; }
+.lo-spinner { width: 32px; height: 32px; border: 3px solid var(--arena); border-top-color: var(--oro); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto; }
+@keyframes spin { to { transform: rotate(360deg); } }
 </style>
 </head>
 <body>
 
+<!-- LOADING OVERLAY -->
+<div id="loading-overlay">
+  <div class="lo-box">
+    <div class="lo-spinner"></div>
+    <p id="loading-msg">Cargando…</p>
+  </div>
+</div>
+
+<!-- ═══════════ DASHBOARD ═══════════ -->
+<div id="view-dashboard">
+  <div class="db-header-bar">
+    <div class="logo-badge">V</div>
+    <div class="hd-title">
+      <h1>Verum Capital</h1>
+      <span>Protocolo interno de análisis</span>
+    </div>
+    <button class="btn-nueva-opp" onclick="newAnalysis()">+ Nueva oportunidad</button>
+  </div>
+
+  <div class="db-container">
+    <div class="db-top-bar">
+      <h2>Oportunidades</h2>
+      <input type="search" id="db-search" placeholder="Buscar por dirección, tipología…" oninput="filterDashboard(this.value)">
+    </div>
+    <div id="db-resume" style="display:none"></div>
+    <div id="db-list"><div class="db-loading">Cargando oportunidades…</div></div>
+  </div>
+</div>
+
+<!-- ═══════════ ANÁLISIS ═══════════ -->
+<div id="view-analysis">
+
 <header>
+  <button class="btn-back-dash" onclick="showDashboard()">← Dashboard</button>
   <div class="logo-badge">V</div>
   <div class="header-title">
     <h1>Análisis de Oportunidades</h1>
@@ -470,6 +569,7 @@ h3 { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 400
 </section>
 
 </main>
+</div><!-- /view-analysis -->
 
 <script>
 // ═══════════════════════════════════════════
@@ -828,9 +928,282 @@ function save() {
 }
 
 function resetAll() {
-  if (!confirm('¿Reiniciar el análisis? Se perderán todos los datos.')) return;
+  if (!confirm('¿Reiniciar el análisis? Se perderán todos los datos del análisis actual.')) return;
   localStorage.removeItem('vc_analysis');
-  location.reload();
+  state = {
+    asset: null, strategy: null,
+    assetInfo: { name:'', address:'', surface:'', date: new Date().toISOString().slice(0,10), analyst:'', contactName:'', contactType:'propietario' },
+    docStatus: {}, comparables: [], marketData: { median:null, discounted:null, classification:null },
+    marketChecks: {}, calcValues: {}, calcInputs: {}, notes: '', flags: {}, currentStep: 1, analysisId: null,
+  };
+  showDashboard();
+}
+
+// ═══════════════════════════════════════════
+// DASHBOARD
+// ═══════════════════════════════════════════
+
+var allAnalyses = [];
+
+function showDashboard() {
+  document.getElementById('view-dashboard').style.display = 'block';
+  document.getElementById('view-analysis').style.display = 'none';
+  loadDashboard();
+  checkResumeBanner();
+}
+
+function showAnalysis() {
+  document.getElementById('view-dashboard').style.display = 'none';
+  document.getElementById('view-analysis').style.display = 'block';
+}
+
+function newAnalysis() {
+  localStorage.removeItem('vc_analysis');
+  state = {
+    asset: null, strategy: null,
+    assetInfo: { name:'', address:'', surface:'', date: new Date().toISOString().slice(0,10), analyst:'', contactName:'', contactType:'propietario' },
+    docStatus: {}, comparables: [], marketData: { median:null, discounted:null, classification:null },
+    marketChecks: {}, calcValues: {}, calcInputs: {}, notes: '', flags: {}, currentStep: 1, analysisId: null,
+  };
+  // Reset nav UI
+  document.querySelectorAll('.nav-step').forEach((el, i) => {
+    el.className = 'nav-step ' + (i === 0 ? 'state-active' : 'state-locked');
+  });
+  // Reset steps UI
+  document.querySelectorAll('.step-section').forEach((el, i) => {
+    el.className = 'step-section ' + (i === 0 ? 'state-active' : 'state-locked');
+    if (i > 0) el.querySelector('.step-body').innerHTML = '';
+  });
+  // Reset step 1 selections
+  document.querySelectorAll('#asset-grid .asset-card').forEach(c => c.classList.remove('selected'));
+  var s1info = document.getElementById('step1-info');
+  if (s1info) s1info.style.display = 'none';
+  var s1strat = document.getElementById('step1-strategy');
+  if (s1strat) s1strat.style.display = 'none';
+  showAnalysis();
+}
+
+function checkResumeBanner() {
+  var resume = document.getElementById('db-resume');
+  if (!resume) return;
+  if (state.asset && state.currentStep >= 1) {
+    var ai = state.assetInfo || {};
+    var name = ai.name || ai.address || 'Análisis sin nombre';
+    var paso = state.currentStep || 1;
+    resume.style.display = 'flex';
+    resume.innerHTML = `
+      <div class="resume-banner">
+        <div class="rb-text">Tienes un análisis en progreso: <strong>${name}</strong> — Paso ${paso} de 6</div>
+        <button class="btn-resume" onclick="resumeAnalysis()">Continuar →</button>
+      </div>`;
+  } else {
+    resume.style.display = 'none';
+    resume.innerHTML = '';
+  }
+}
+
+function resumeAnalysis() {
+  showAnalysis();
+  initAnalysisView();
+}
+
+async function loadDashboard() {
+  var listEl = document.getElementById('db-list');
+  if (!listEl) return;
+  listEl.innerHTML = '<div class="db-loading">Cargando oportunidades…</div>';
+
+  var url = getGasUrl();
+  if (!url) {
+    listEl.innerHTML = '<div class="db-loading">Configura la URL del script en el Paso 6 para sincronizar oportunidades.</div>';
+    return;
+  }
+
+  try {
+    var res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ action: 'list_analyses' }),
+    });
+    var data = await res.json();
+    allAnalyses = data.analyses || [];
+    renderDashboard(allAnalyses);
+  } catch(err) {
+    listEl.innerHTML = '<div class="db-loading">Error al cargar: ' + err.message + '</div>';
+  }
+}
+
+function renderDashboard(analyses) {
+  var listEl = document.getElementById('db-list');
+  if (!listEl) return;
+
+  if (!analyses || !analyses.length) {
+    listEl.innerHTML = `
+      <div class="db-empty">
+        <h3>Sin oportunidades registradas</h3>
+        <p>Completa y guarda tu primer análisis en Drive para verlo aquí.</p>
+      </div>`;
+    return;
+  }
+
+  var cards = analyses.map(function(a) {
+    var precio = a.precio ? fmtEur(+a.precio) : '—';
+    var m2 = a.superficie ? (a.superficie + ' m²') : '—';
+    var fecha = '';
+    if (a.fecha) {
+      try { fecha = new Date(a.fecha).toLocaleDateString('es-ES', {day:'numeric', month:'short', year:'numeric'}); }
+      catch(e) { fecha = a.fecha; }
+    }
+    var tipo = [a.tipologia, a.estrategia].filter(Boolean).join(' · ');
+    var searchData = (a.nombre + ' ' + a.direccion + ' ' + a.tipologia + ' ' + a.estrategia).toLowerCase();
+
+    return `<div class="opp-card" data-id="${a.id}" data-search="${searchData}">
+      <div class="opp-card-top">
+        <div class="opp-tipo">${tipo || '—'}</div>
+        <div class="opp-address">${a.direccion || 'Sin dirección'}</div>
+        <div class="opp-name">${a.nombre || ''}</div>
+      </div>
+      <div class="opp-metrics">
+        <div class="opp-metric">
+          <div class="opp-metric-label">Precio</div>
+          <div class="opp-metric-value">${precio}</div>
+        </div>
+        <div class="opp-metric">
+          <div class="opp-metric-label">Superficie</div>
+          <div class="opp-metric-value">${m2}</div>
+        </div>
+      </div>
+      <div class="opp-card-bottom">
+        <select class="opp-status-select" onchange="updateAnalysisStatus('${a.id}', this.value)">
+          ${['En análisis','Aprobada','Descartada','Presentada a inversores'].map(function(s) {
+            return '<option value="' + s + '"' + (a.estado === s ? ' selected' : '') + '>' + s + '</option>';
+          }).join('')}
+        </select>
+        <span class="opp-meta">${fecha}${a.analista ? '<br>' + a.analista : ''}</span>
+      </div>
+      <div class="opp-actions">
+        <button class="btn-opp dark" onclick="editAnalysisFromDash('${a.folderId}', '${a.id}')">Editar</button>
+        <button class="btn-opp" onclick="viewFichaFromDash('${a.folderId}')">Ver ficha</button>
+        ${a.folderUrl ? '<a class="btn-opp" href="' + a.folderUrl + '" target="_blank">Drive ↗</a>' : ''}
+      </div>
+    </div>`;
+  }).join('');
+
+  listEl.innerHTML = '<div class="opp-grid">' + cards + '</div>';
+}
+
+function filterDashboard(query) {
+  var q = (query || '').toLowerCase().trim();
+  var cards = document.querySelectorAll('.opp-card');
+  cards.forEach(function(card) {
+    var text = card.getAttribute('data-search') || '';
+    card.style.display = (!q || text.includes(q)) ? '' : 'none';
+  });
+}
+
+async function editAnalysisFromDash(folderId, id) {
+  showLoadingOverlay('Cargando análisis…');
+  var url = getGasUrl();
+  try {
+    var res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ action: 'get_analysis', folderId: folderId }),
+    });
+    var data = await res.json();
+    if (data.error) throw new Error(data.error);
+
+    state = data.analysisState;
+    state.analysisId = id;
+    save();
+    hideLoadingOverlay();
+    showAnalysis();
+    initAnalysisView();
+  } catch(err) {
+    hideLoadingOverlay();
+    alert('Error al cargar el análisis: ' + err.message);
+  }
+}
+
+async function viewFichaFromDash(folderId) {
+  showLoadingOverlay('Cargando ficha…');
+  var url = getGasUrl();
+  try {
+    var res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ action: 'get_analysis', folderId: folderId }),
+    });
+    var data = await res.json();
+    if (data.error) throw new Error(data.error);
+
+    var savedState = state;
+    state = data.analysisState;
+    hideLoadingOverlay();
+    generateFicha();
+    window.print();
+    state = savedState;
+  } catch(err) {
+    hideLoadingOverlay();
+    alert('Error al cargar la ficha: ' + err.message);
+  }
+}
+
+async function updateAnalysisStatus(id, estado) {
+  var url = getGasUrl();
+  if (!url || !id) return;
+  try {
+    await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ action: 'update_status', id: id, estado: estado }),
+    });
+  } catch(err) {
+    console.warn('Error actualizando estado:', err);
+  }
+}
+
+async function saveAnalysisToIndex() {
+  var url = getGasUrl();
+  if (!url || !state.driveData) return;
+  var ai = state.assetInfo || {};
+  var id = state.analysisId || ('vc_' + Date.now());
+  state.analysisId = id;
+  save();
+
+  try {
+    await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({
+        action: 'save_analysis',
+        id: id,
+        nombre: ai.name || '',
+        direccion: ai.address || '',
+        tipologia: ASSET_LABELS[state.asset] || '',
+        estrategia: STRATEGY_LABELS[state.strategy]?.label || '',
+        superficie: ai.surface || '',
+        precio: state.calcInputs?.precio || '',
+        fecha: ai.date || '',
+        analista: ai.analyst || '',
+        estado: state.estado || 'En análisis',
+        folderId: state.driveData.folderId || '',
+        folderUrl: state.driveData.folderUrl || '',
+        docUrl: state.driveData.docUrl || '',
+        analysisState: state,
+      }),
+    });
+  } catch(err) {
+    console.warn('Error guardando en índice:', err);
+  }
+}
+
+function showLoadingOverlay(msg) {
+  document.getElementById('loading-msg').textContent = msg || 'Cargando…';
+  document.getElementById('loading-overlay').classList.add('active');
+}
+
+function hideLoadingOverlay() {
+  document.getElementById('loading-overlay').classList.remove('active');
 }
 
 // ═══════════════════════════════════════════
@@ -1401,6 +1774,13 @@ function calcResidual() {
 }
 
 function confirmStep4() {
+  // Capturar precio de compra para el dashboard
+  var precioEl = document.getElementById('c-precio');
+  var pedidoEl = document.getElementById('c-pedido');
+  if (!state.calcInputs) state.calcInputs = {};
+  if (precioEl && precioEl.value) state.calcInputs.precio = +precioEl.value;
+  else if (pedidoEl && pedidoEl.value) state.calcInputs.precio = +pedidoEl.value;
+
   state.currentStep = Math.max(state.currentStep, 5);
   setStepDone(4);
   unlockStep(5);
@@ -1711,6 +2091,8 @@ async function sendToDrive() {
     }
 
     renderDriveResult(attachable.length);
+    // Guardar en el índice del dashboard
+    saveAnalysisToIndex();
   } catch (err) {
     resultEl.innerHTML = `<div class="info-box" style="border-color:#e99;background:#fff5f0;color:#c06050">
       <strong>Error:</strong> ${err.message}<br>
@@ -1775,12 +2157,22 @@ function scrollToStep(n) {
 // INIT — restore state on reload
 // ═══════════════════════════════════════════
 
-(function init() {
-  if (!state.asset) return;
-  // Ensure assetInfo exists (backwards compat with old saved state)
+function initAnalysisView() {
   if (!state.assetInfo) {
     state.assetInfo = { name:'', address:'', surface:'', date: new Date().toISOString().slice(0,10), analyst:'', contactName:'', contactType:'propietario' };
   }
+
+  // Reset nav + steps first
+  document.querySelectorAll('.nav-step').forEach((el, i) => {
+    el.className = 'nav-step ' + (i === 0 ? 'state-active' : 'state-locked');
+  });
+  document.querySelectorAll('.step-section').forEach((el, i) => {
+    el.className = 'step-section ' + (i === 0 ? 'state-active' : 'state-locked');
+    if (i > 0) el.querySelector('.step-body').innerHTML = '';
+  });
+  document.querySelectorAll('#asset-grid .asset-card').forEach(c => c.classList.remove('selected'));
+
+  if (!state.asset) return;
 
   const assetOrder = ['local-cambio-uso','local-con-inquilino','local-vacio','edificio-renta','edificio-reforma','terreno','vivienda','nave'];
   const idx = assetOrder.indexOf(state.asset);
@@ -1798,7 +2190,6 @@ function scrollToStep(n) {
       </div>`).join('');
   }
 
-  // Restore info form (always show if asset+strategy are set)
   if (state.asset && state.strategy && state.currentStep < 2) {
     showInfoForm();
   }
@@ -1808,7 +2199,11 @@ function scrollToStep(n) {
   if (state.currentStep >= 4) { setStepDone(3); unlockStep(4); renderStep4(); }
   if (state.currentStep >= 5) { setStepDone(4); unlockStep(5); renderStep5(); }
   if (state.currentStep >= 6) { setStepDone(5); unlockStep(6); renderStep6(); }
-})();
+  scrollToStep(state.currentStep || 1);
+}
+
+// Arranque: siempre mostrar dashboard
+showDashboard();
 </script>
 </body>
 </html>
